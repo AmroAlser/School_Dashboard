@@ -97,19 +97,34 @@
                 <!-- الصف الثالث -->
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="grade" class="form-label">الصف الدراسي <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
-                                <i class="fas fa-graduation-cap"></i>
-                            </span>
-                            <input type="text" class="form-control @error('grade') is-invalid @enderror"
-                                   id="grade" name="grade"
-                                   value="{{ old('grade', $student->grade) }}" required
-                                   placeholder="مثال: الأول ابتدائي">
-                            @error('grade')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <label for="class_id" class="form-label">الصف الدراسي <span class="text-danger">*</span></label>
+                        <select class="form-select @error('class_id') is-invalid @enderror" id="class_id" name="class_id" required>
+                            <option value="">اختر الصف الدراسي</option>
+                            @foreach($classes as $class)
+                                <option value="{{ $class->id }}" {{ old('class_id', $student->class_id) == $class->id ? 'selected' : '' }}>
+                                    {{ $class->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('class_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+                        <label for="semester_id" class="form-label">الفصل الدراسي <span class="text-danger">*</span></label>
+                        <select class="form-select @error('semester_id') is-invalid @enderror" id="semester_id" name="semester_id" required>
+                            <option value="">اختر الفصل الدراسي</option>
+                            @foreach($semesters as $semester)
+                                <option value="{{ $semester->id }}" {{ old('semester_id', $student->semester_id) == $semester->id ? 'selected' : '' }}>
+                                    {{ $semester->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('semester_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-4 mb-3">

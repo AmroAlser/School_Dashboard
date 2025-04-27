@@ -4,6 +4,16 @@
 @section('page-title', 'تسجيل طالب جديد')
 
 @section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <div class="container-fluid">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -93,23 +103,32 @@
                     </div>
                 </div>
 
+
                 <!-- الصف الثالث -->
                 <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="grade" class="form-label">الصف الدراسي <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-primary text-white">
-                                <i class="fas fa-graduation-cap"></i>
-                            </span>
-                            <input type="text" class="form-control @error('grade') is-invalid @enderror"
-                                   id="grade" name="grade"
-                                   value="{{ old('grade') }}" required
-                                   placeholder="مثال: الأول الصم">
-                            @error('grade')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="form-group">
+                        <label for="class_id">الصف الدراسي</label>
+                        <select name="class_id" id="class_id" class="form-control" required>
+                            <option value="">اختر الصف</option>
+                            @foreach($classes as $class)
+                                <option value="{{ $class->id }}">{{ $class->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
+
+
+                    <div class="mb-3">
+                        <label for="semester_id" class="form-label">الفصل الدراسي</label>
+                        <select name="semester_id" id="semester_id" class="form-select select2" required>
+                            <option value="">-- اختر الفصل الدراسي --</option>
+                            @foreach ($semesters as $semester)
+                                <option value="{{ $semester->id }}" {{ old('semester_id', $student->semester_id ?? '') == $semester->id ? 'selected' : '' }}>
+                                    {{ $semester->name }} - {{ $semester->year }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
 
                     <div class="col-md-4 mb-3">
                         <label for="academic_year" class="form-label">السنة الدراسية <span class="text-danger">*</span></label>

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherStudentEvaluation extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'student_id',
         'teacher_id',
@@ -15,7 +14,9 @@ class TeacherStudentEvaluation extends Model
         'evaluator_name',
         'evaluator_job_number',
         'evaluation_date',
+        'class_id',
     ];
+
 
     public function student()
     {
@@ -26,5 +27,9 @@ class TeacherStudentEvaluation extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
-
+    // تعريف علاقة التقييم مع الصف
+    public function class()
+    {
+        return $this->belongsTo(SchoolClass::class);
+    }
 }

@@ -38,6 +38,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="detail-card">
+                            <div class="detail-icon bg-info-light">
+                                <i class="fas fa-user-graduate text-info"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h6>الصف</h6>
+                                <p>{{ $evaluation->class->name }}</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-6 mt-3">
                         <div class="detail-card">
                             <div class="detail-icon bg-success-light">

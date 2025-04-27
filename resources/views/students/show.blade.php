@@ -75,8 +75,12 @@
                         </div>
                         <div class="detail-body">
                             <div class="detail-item">
-                                <span class="detail-label">الصف الدراسي:</span>
-                                <span class="detail-value">{{ $student->grade }}</span>
+                                <span class="detail-label">  الصف الدراسي:</span>
+                                <span class="detail-value">{{ $student->class->name ?? 'غير محدد' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">الفصل الدراسي:</span>
+                                <span class="detail-value">{{ $student->semester->name ?? 'غير محدد' }}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">السنة الدراسية:</span>

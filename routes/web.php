@@ -7,6 +7,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherStudentEvaluationController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +27,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('/subjects', SubjectController::class);
     Route::resource('/teachers', TeacherController::class);
     Route::resource('/evaluations', TeacherStudentEvaluationController::class);
-    Route::get('/students/export-excel', [StudentController::class, 'exportExcel'])->name('students.export.excel');
+    Route::resource('/semesters', \App\Http\Controllers\SemesterController::class);
+    Route::resource('/grades', \App\Http\Controllers\GradeController::class);
+    Route::resource('/classes', \App\Http\Controllers\SchoolClassController::class);
+    Route::get('/reports/students', [ReportController::class, 'studentsReport'])->name('reports.students');
+    Route::get('/reports/grades', [ReportController::class, 'gradesReport'])->name('reports.grades');
+    Route::get('/reports/semesters', [ReportController::class, 'semestersReport'])->name('reports.semesters');
+    Route::get('/students/export-excel', [StudentController::class, 'studenttexcel'])->name('students.excel');
     Route::post('/students/import', [App\Http\Controllers\StudentController::class, 'import'])->name('students.import');
-
+    Route::get('/export/students', [ReportController::class, 'exportStudentsReport'])->name('export.students');
+    Route::get('/export/grades', [ReportController::class, 'exportGradesReport'])->name('export.grades');
+    Route::get('/export/semesters', [ReportController::class, 'exportSemestersReport'])->name('export.semesters');
 });

@@ -22,6 +22,8 @@
             --secondary-light: #34495e;
             --accent-color: #e74c3c;
             --accent-light: #f39c12;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
             --light-color: #f8f9fa;
             --dark-color: #343a40;
             --sidebar-width: 280px;
@@ -194,6 +196,8 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
         }
 
         .page-header h3 {
@@ -201,12 +205,20 @@
             color: var(--secondary-color);
             margin: 0;
             font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-header h3 i {
+            margin-left: 10px;
+            color: var(--primary-color);
         }
 
         .breadcrumb {
             background-color: transparent;
             padding: 0;
             margin-top: 10px;
+            font-size: 0.9rem;
         }
 
         .breadcrumb-item a {
@@ -226,6 +238,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             transition: var(--transition);
+            margin-bottom: 20px;
         }
 
         .card:hover {
@@ -236,6 +249,20 @@
         .card-header {
             border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
             padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header .card-title {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header .card-title i {
+            margin-left: 8px;
         }
 
         /* Button Styles */
@@ -244,6 +271,60 @@
             padding: 0.5rem 1.25rem;
             font-weight: 500;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-left: 5px;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .table {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--light-color);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Badge Styles */
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+            font-size: 0.85em;
+        }
+
+        /* Alert Styles */
+        .alert {
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: none;
+        }
+
+        /* Form Styles */
+        .form-control, .form-select {
+            border-radius: var(--border-radius);
+            padding: 0.5rem 0.75rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
         /* Animations */
@@ -285,24 +366,43 @@
             transition: var(--transition);
         }
 
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .alert {
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+        .action-btns .btn {
+            padding: 0.35rem 0.5rem;
+            font-size: 0.85rem;
         }
 
-        .table {
-            border-radius: var(--border-radius);
-            overflow: hidden;
+        /* Status Colors */
+        .status-active {
+            color: var(--success-color);
         }
 
-        .table th {
-            background-color: var(--light-color);
-            font-weight: 600;
+        .status-inactive {
+            color: var(--warning-color);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -346,7 +446,7 @@
                 <a href="{{route('students.index')}}"><i class="fas fa-list"></i> عرض كافة الطلاب</a>
                 <a href="{{ route('students.create') }}"><i class="fas fa-user-plus"></i> تسجيل طالب جديد</a>
                 <a href="{{route('students.index')}}"><i class="fas fa-search"></i> بحث عن طالب</a>
-                <a href="{{route('students.export.excel')}}"><i class="fas fa-file-export"></i> تصدير بيانات الطلاب</a>
+                <a href="{{route('students.excel')}}"><i class="fas fa-file-export"></i> تصدير بيانات الطلاب</a>
             </div>
         </li>
 
@@ -365,13 +465,66 @@
             </div>
         </li>
 
-        <li>
-            <a href="{{route('subjects.index')}}">
-                <i class="fas fa-book"></i>
-                المواد الدراسية
-            </a>
+        <!-- إدارة الفصول الدراسية -->
+        <li class="dropdown">
+            <button onclick="toggleDropdown('semestersDropdown')" class="dropbtn">
+                <span class="menu-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    الفصول الدراسية
+                </span>
+                <i class="fas fa-angle-down arrow"></i>
+            </button>
+            <div id="semestersDropdown" class="dropdown-content">
+                <a href="{{route('semesters.index')}}"><i class="fas fa-list"></i> عرض جميع الفصول</a>
+                <a href="{{ route('semesters.create') }}"><i class="fas fa-plus"></i> إضافة فصل جديد</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <button onclick="toggleDropdown('subjectsDropdown')" class="dropbtn">
+                <span class="menu-title">
+                    <i class="fas fa-book"></i>
+                    الصفوف الدراسية
+                </span>
+                <i class="fas fa-angle-down arrow"></i>
+            </button>
+            <div id="subjectsDropdown" class="dropdown-content">
+                <a href="{{route('classes.index')}}"><i class="fas fa-list"></i> عرض جميع الصفوف</a>
+                <a href="{{ route('classes.create') }}"><i class="fas fa-plus"></i> إضافة صف جديدة</a>
+            </div>
         </li>
 
+        <!-- إدارة المواد الدراسية -->
+        <li class="dropdown">
+            <button onclick="toggleDropdown('subjectsDropdown')" class="dropbtn">
+                <span class="menu-title">
+                    <i class="fas fa-book"></i>
+                    المواد الدراسية
+                </span>
+                <i class="fas fa-angle-down arrow"></i>
+            </button>
+            <div id="subjectsDropdown" class="dropdown-content">
+                <a href="{{route('subjects.index')}}"><i class="fas fa-list"></i> عرض جميع المواد</a>
+                <a href="{{ route('subjects.create') }}"><i class="fas fa-plus"></i> إضافة مادة جديدة</a>
+            </div>
+        </li>
+
+        <!-- إدارة الدرجات -->
+        <li class="dropdown">
+            <button onclick="toggleDropdown('gradesDropdown')" class="dropbtn">
+                <span class="menu-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    إدارة الدرجات
+                </span>
+                <i class="fas fa-angle-down arrow"></i>
+            </button>
+            <div id="gradesDropdown" class="dropdown-content">
+                <a href="{{ route('grades.index') }}"><i class="fas fa-list"></i> عرض جميع الدرجات</a>
+                <a href="{{ route('grades.create') }}"><i class="fas fa-plus"></i> إضافة درجات جديدة</a>
+                <a href="#"><i class="fas fa-file-import"></i> استيراد الدرجات</a>
+            </div>
+        </li>
+
+        <!-- التقييمات -->
         <li>
             <a href="{{ route('evaluations.index') }}">
                 <i class="fas fa-clipboard-check"></i>
@@ -379,6 +532,23 @@
             </a>
         </li>
 
+        <!-- التقارير -->
+        <li class="dropdown">
+            <button onclick="toggleDropdown('reportsDropdown')" class="dropbtn">
+                <span class="menu-title">
+                    <i class="fas fa-chart-bar"></i>
+                    التقارير والإحصاءات
+                </span>
+                <i class="fas fa-angle-down arrow"></i>
+            </button>
+            <div id="reportsDropdown" class="dropdown-content">
+                <a href="{{ route('reports.students') }}"><i class="fas fa-chart-pie"></i> تقارير الطلاب</a>
+                <a href="{{ route('reports.grades') }}"><i class="fas fa-chart-line"></i> تقارير الدرجات</a>
+                <a href="{{ route('reports.semesters') }}"><i class="fas fa-chart-bar"></i> إحصاءات الفصول</a>
+            </div>
+        </li>
+
+        <!-- الإعدادات -->
         <li>
             <a href="{{route('admin.login')}}">
                 <i class="fas fa-sign-out-alt"></i>
@@ -391,14 +561,30 @@
 <!-- Main Content -->
 <div class="main-content">
     <div class="page-header">
-        <h3>@yield('page-title', 'لوحة التحكم')</h3>
+        <h3><i class="@yield('title-icon', 'fas fa-tachometer-alt')"></i> @yield('page-title', 'لوحة التحكم')</h3>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="fas fa-home"></i> الرئيسية</a></li>
                 <li class="breadcrumb-item active" aria-current="page">@yield('page-title', 'لوحة التحكم')</li>
             </ol>
         </nav>
     </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     @yield('content')
 </div>
@@ -453,7 +639,16 @@
     // Run on load and resize
     window.addEventListener('load', checkScreenSize);
     window.addEventListener('resize', checkScreenSize);
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
 
+@yield('scripts')
 </body>
 </html>

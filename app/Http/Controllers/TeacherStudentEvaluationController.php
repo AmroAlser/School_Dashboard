@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\TeacherStudentEvaluation;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\SchoolClass; // تأكد من إضافة هذا النموذج
 use Illuminate\Http\Request;
 
 class TeacherStudentEvaluationController extends Controller
 {
     public function index()
     {
-        $evaluations = TeacherStudentEvaluation::with(['teacher', 'student'])->oldest()->get();
+        $evaluations = TeacherStudentEvaluation::with(['teacher', 'student', 'class'])->oldest()->get();
         return view('evaluations.index', compact('evaluations'));
     }
 
@@ -19,7 +20,8 @@ class TeacherStudentEvaluationController extends Controller
     {
         $teachers = Teacher::all();
         $students = Student::all();
-        return view('evaluations.create', compact('teachers', 'students'));
+        $classes = SchoolClass::all(); // إضافة استدعاء للصفوف
+        return view('evaluations.create', compact('teachers', 'students', 'classes')); // تمرير الصفوف
     }
 
     public function store(Request $request)
@@ -31,6 +33,7 @@ class TeacherStudentEvaluationController extends Controller
             'evaluator_name' => 'required|string',
             'evaluator_job_number' => 'required|string',
             'evaluation_date' => 'required|date',
+            'class_id' => 'required|exists:classes,id', // إضافة validation للصف
         ]);
 
         TeacherStudentEvaluation::create($request->all());
@@ -46,7 +49,8 @@ class TeacherStudentEvaluationController extends Controller
     {
         $teachers = Teacher::all();
         $students = Student::all();
-        return view('evaluations.edit', compact('evaluation', 'teachers', 'students'));
+        $classes = SchoolClass::all(); // إضافة استدعاء للصفوف
+        return view('evaluations.edit', compact('evaluation', 'teachers', 'students', 'classes')); // تمرير الصفوف
     }
 
     public function update(Request $request, TeacherStudentEvaluation $evaluation)
@@ -57,7 +61,8 @@ class TeacherStudentEvaluationController extends Controller
             'evaluation' => 'required|string',
             'evaluator_name' => 'required|string',
             'evaluator_job_number' => 'required|string',
-            'evaluation_date' => 'required|date', 
+            'evaluation_date' => 'required|date',
+            'class_id' => 'required|exists:classes,id', // إضافة validation للصف
         ]);
 
         $evaluation->update($request->all());

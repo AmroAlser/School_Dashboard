@@ -39,6 +39,17 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="class_id" class="form-label">الصف</label>
+                        <select name="class_id" id="class_id" class="form-select select2" required>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->id }}" {{ $evaluation->class_id == $class->id ? 'selected' : '' }}>
+                                    {{ $class->name }}  <!-- تأكد من أن هذا الحقل يتضمن اسم الصف -->
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -53,7 +64,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="evaluation_date" class="form-label">تاريخ التقييم</label>
-                            <input type="date" name="evaluation_date" id="evaluation_date" class="form-control" value="{{ $evaluation->evaluation_date->format('Y-m-d') }}" required>
+                            <input type="date" name="evaluation_date" id="evaluation_date" class="form-control" value="{{ $evaluation->evaluation_date }}" required>
                         </div>
                     </div>
                 </div>

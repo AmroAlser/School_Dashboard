@@ -5,36 +5,39 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0">
-                <i class="fas fa-star-half-alt me-2"></i>التقييمات الأكاديمية
+                <i class="fas fa-star-half-alt me-2"></i> التقييمات الأكاديمية
             </h5>
-            <a href="{{ route('evaluations.create') }}" class="btn btn-light">
-                <i class="fas fa-plus me-1"></i> تقييم جديد
-            </a>
+            <div>
+                <a href="{{ route('evaluations.create') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus me-1"></i> تقييم جديد
+                </a>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-0">
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
                     <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered">
-                    <thead class="table-primary">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th width="5%">#</th>
-                            <th width="15%">المعلم</th>
-                            <th width="15%">الطالب</th>
-                            <th width="12%">المقيم</th>
-                            <th width="10%">الرقم الوظيفي</th>
-                            <th width="10%">التاريخ</th>
-                            <th width="23%">التقييم</th>
-                            <th width="10%">الإجراءات</th>
+                            <th width="40" class="text-center">#</th>
+                            <th>المعلم</th>
+                            <th>الطالب</th>
+                            <th>الصف</th>
+                            <th>المقيم</th>
+                            <th width="120" class="text-center">الرقم الوظيفي</th>
+                            <th width="100" class="text-center">التاريخ</th>
+                            <th>التقييم</th>
+                            <th width="120" class="text-center">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,14 +68,17 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td class="text-truncate" style="max-width: 120px;" title="{{ $evaluation->class->name }}">
+                                    {{ $evaluation->class->name ?? 'غير محدد' }}
+                                </td>
                                 <td class="text-truncate" style="max-width: 120px;" title="{{ $evaluation->evaluator_name }}">
                                     {{ $evaluation->evaluator_name }}
                                 </td>
                                 <td class="text-center">
-                                    {{ $evaluation->evaluator_job_number }}
+                                    <span class="badge bg-secondary">{{ $evaluation->evaluator_job_number }}</span>
                                 </td>
                                 <td class="text-center">
-                                    {{ \Carbon\Carbon::parse($evaluation->evaluation_date)->format('d/m/Y') }}
+                                    <span class="badge bg-light text-dark">{{ \Carbon\Carbon::parse($evaluation->evaluation_date)->format('d/m/Y') }}</span>
                                 </td>
                                 <td>
                                     <div class="evaluation-text">
@@ -86,16 +92,16 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('evaluations.show', $evaluation) }}" class="btn btn-sm btn-info" title="عرض">
+                                        <a href="{{ route('evaluations.show', $evaluation) }}" class="btn btn-info" title="عرض" data-bs-toggle="tooltip">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('evaluations.edit', $evaluation) }}" class="btn btn-sm btn-warning" title="تعديل">
+                                        <a href="{{ route('evaluations.edit', $evaluation) }}" class="btn btn-warning" title="تعديل" data-bs-toggle="tooltip">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('evaluations.destroy', $evaluation) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="حذف" onclick="return confirm('هل أنت متأكد من حذف هذا التقييم؟')">
+                                            <button type="submit" class="btn btn-danger" title="حذف" data-bs-toggle="tooltip" onclick="return confirm('هل أنت متأكد من حذف هذا التقييم؟')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
@@ -104,7 +110,10 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">لا توجد تقييمات مسجلة</td>
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="fas fa-star fa-2x mb-3"></i>
+                                    <p class="mb-0">لا توجد تقييمات مسجلة</p>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -112,7 +121,7 @@
             </div>
 
             @if($evaluations instanceof \Illuminate\Pagination\AbstractPaginator && $evaluations->hasPages())
-                <div class="d-flex justify-content-center mt-3">
+                <div class="p-3 border-top">
                     {{ $evaluations->links() }}
                 </div>
             @endif
@@ -125,12 +134,16 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">نص التقييم الكامل</h5>
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt me-2"></i>نص التقييم الكامل
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="fullEvaluationText" style="white-space: pre-line;"></div>
+            <div class="modal-body" id="fullEvaluationText" style="white-space: pre-line; line-height: 1.8;"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> إغلاق
+                </button>
             </div>
         </div>
     </div>
@@ -140,6 +153,10 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // تفعيل أدوات التلميح
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        // عرض النص الكامل للتقييم
         $('.read-more').click(function(e) {
             e.preventDefault();
             $('#fullEvaluationText').text($(this).data('fulltext'));
@@ -151,25 +168,6 @@
 
 @push('styles')
 <style>
-    .table {
-        font-size: 0.9rem;
-    }
-
-    .table th {
-        vertical-align: middle;
-        text-align: center;
-        font-weight: 600;
-        background-color: #f8f9fa;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .evaluation-text {
-        line-height: 1.5;
-    }
-
     .avatar-sm {
         width: 28px;
         height: 28px;
@@ -182,14 +180,34 @@
         font-size: 0.8rem;
     }
 
+    .bg-primary-light {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+    .bg-info-light {
+        background-color: rgba(23, 162, 184, 0.1);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        vertical-align: middle;
+    }
+
+    .table td {
+        font-size: 0.85rem;
+        vertical-align: middle;
+    }
+
     .btn-group .btn {
-        padding: 0.2rem 0.4rem;
-        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
     }
 
     .card-header {
         border-radius: 0.5rem 0.5rem 0 0 !important;
-        padding: 1rem 1.5rem;
     }
 
     .text-truncate {
@@ -198,13 +216,21 @@
         white-space: nowrap;
     }
 
-    .table-bordered {
-        border: 1px solid #dee2e6;
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
     }
 
-    .table-bordered th,
-    .table-bordered td {
-        border: 1px solid #dee2e6;
+    .evaluation-text {
+        line-height: 1.6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.04);
     }
 </style>
 @endpush

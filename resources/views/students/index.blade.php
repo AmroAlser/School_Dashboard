@@ -6,33 +6,35 @@
 @section('content')
 <div class="container-fluid">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0">
                 <i class="fas fa-users me-2"></i>سجل الطلاب
             </h5>
-            <div>
-                <a href="{{ route('students.create') }}" class="btn btn-light">
+            <div class="d-flex gap-2">
+                <a href="{{ route('students.create') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-plus me-1"></i> تسجيل طالب جديد
                 </a>
-                {{-- <a href="{{ route('students.export.excel') }}" class="btn btn-success ms-2">
-                    <i class="fas fa-file-excel me-1"></i> تصدير للإكسل
-
-                </a> --}}
+                {{-- <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="fas fa-file-import me-1"></i> استيراد
+                </button> --}}
+                <a href="{{ route('students.excel') }}" class="btn btn-info btn-sm">
+                    <i class="fas fa-file-excel me-1"></i> تصدير
+                </a>
             </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-0">
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
                     <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
-            <div class="search-filter mb-4">
-                <form action="{{ route('students.index') }}" method="GET" class="row g-3">
+            <div class="p-3 border-bottom">
+                <form action="{{ route('students.index') }}" method="GET" class="row g-2">
                     <div class="col-md-8">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-search"></i>
                             </span>
@@ -43,7 +45,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <select name="status" class="form-select" onchange="this.form.submit()">
+                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">جميع الحالات</option>
                             <option value="مواطن" {{ request('status') == 'مواطن' ? 'selected' : '' }}>مواطن</option>
                             <option value="لاجئ" {{ request('status') == 'لاجئ' ? 'selected' : '' }}>لاجئ</option>
@@ -53,16 +55,17 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-bordered">
+                <table class="table table-hover table-striped table-bordered mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>#</th>
+                            <th width="50">#</th>
                             <th>الاسم</th>
                             <th>رقم الهوية</th>
                             <th>الصف</th>
+                            <th>الفصل</th>
                             <th>الجنس</th>
                             <th>العمر</th>
-                            <th>رقم الجوال</th>
+                            <th>الجوال</th>
                             <th>العنوان</th>
                             <th>الإعاقة</th>
                             <th>هوية ولي الأمر</th>
@@ -70,7 +73,7 @@
                             <th>السنة الدراسية</th>
                             <th>منقول من</th>
                             <th>منقول إلى</th>
-                            <th>الإجراءات</th>
+                            <th width="120">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,18 +94,19 @@
                                     </div>
                                 </td>
                                 <td>{{ $student->national_id }}</td>
-                                <td>{{ $student->grade }}</td>
-                                <td>
+                                <td>{{ $student->class->name ?? 'غير محدد' }}</td>
+                                <td>{{ $student->semester->name ?? 'غير محدد' }}</td>
+                                <td class="text-center">
                                     <span class="badge {{ $student->gender == 'ذكر' ? 'bg-info' : 'bg-pink' }}">
                                         {{ $student->gender }}
                                     </span>
                                 </td>
-                                <td>{{ \Carbon\Carbon::parse($student->birth_date)->age }} سنة</td>
+                                <td class="text-center">{{ \Carbon\Carbon::parse($student->birth_date)->age }} سنة</td>
                                 <td>{{ $student->phone ?? '-' }}</td>
-                                <td>{{ $student->address ?? '-' }}</td>
-                                <td>{{ $student->disability ?? '-' }}</td>
+                                <td>{{ Str::limit($student->address, 15) ?? '-' }}</td>
+                                <td>{{ $student->disability }}</td>
                                 <td>{{ $student->guardian_national_id ?? '-' }}</td>
-                                <td>
+                                <td class="text-center">
                                     <span class="badge {{ $student->status == 'مواطن' ? 'bg-success' : 'bg-warning' }}">
                                         {{ $student->status }}
                                     </span>
@@ -110,18 +114,18 @@
                                 <td>{{ $student->academic_year }}</td>
                                 <td>{{ $student->transferred_from ?? '-' }}</td>
                                 <td>{{ $student->transferred_to ?? '-' }}</td>
-                                <td>
+                                <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('students.show', $student->id) }}" class="btn btn-info" title="عرض التفاصيل" data-bs-toggle="tooltip">
+                                        <a href="{{ route('students.show', $student->id) }}" class="btn btn-info btn-sm" title="عرض التفاصيل" data-bs-toggle="tooltip">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning" title="تعديل" data-bs-toggle="tooltip">
+                                        <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning btn-sm" title="تعديل" data-bs-toggle="tooltip">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" title="حذف" data-bs-toggle="tooltip" onclick="return confirm('هل أنت متأكد من حذف الطالب {{ $student->name }}؟')">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="حذف" data-bs-toggle="tooltip" onclick="return confirm('هل أنت متأكد من حذف الطالب {{ $student->name }}؟')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
@@ -130,7 +134,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="15" class="text-center py-4 text-muted">
+                                <td colspan="16" class="text-center py-4 text-muted">
                                     <i class="fas fa-user-slash fa-2x mb-3"></i>
                                     <p class="mb-0">لا يوجد طلاب مسجلين</p>
                                 </td>
@@ -139,21 +143,44 @@
                     </tbody>
                 </table>
             </div>
-            <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" class="mb-4">
-                @csrf
-                <div class="d-flex gap-3 align-items-center">
-                    <input type="file" name="file" class="form-control w-auto" required>
-                    <button class="btn btn-success">
-                        <i class="fas fa-file-import me-1"></i> استيراد من Excel
-                    </button>
-                </div>
-            </form>
 
             @if($students->hasPages())
-                <div class="d-flex justify-content-center mt-3">
+                <div class="p-3 border-top">
                     {{ $students->appends(request()->input())->links() }}
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="importModalLabel">
+                    <i class="fas fa-file-import me-2"></i>استيراد طلاب من Excel
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">اختر ملف Excel</label>
+                        <input type="file" name="file" class="form-control" required accept=".xlsx,.xls">
+                        <div class="form-text">يجب أن يكون الملف بتنسيق Excel مع الأعمدة الصحيحة</div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        يمكنك <a href="#" class="alert-link">تحميل ملف نموذج</a> للإستيراد
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary btn-sm">استيراد البيانات</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -164,8 +191,6 @@
     $(document).ready(function(){
         // تفعيل أدوات التلميح
         $('[data-bs-toggle="tooltip"]').tooltip();
-
-        // يمكنك إضافة أي سكريبتات إضافية هنا
     });
 </script>
 @endpush
@@ -198,6 +223,18 @@
         font-weight: 600;
         color: #495057;
         white-space: nowrap;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .table td {
+        font-size: 0.85rem;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table td:nth-child(2) {
+        text-align: right;
     }
 
     .btn-group .btn {
@@ -214,6 +251,26 @@
 
     .search-filter .form-control {
         border-radius: 0 0.25rem 0.25rem 0;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.5em;
+        min-width: 60px;
+        display: inline-block;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 1600px) {
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+        }
     }
 </style>
 @endpush

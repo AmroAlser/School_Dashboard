@@ -13,6 +13,7 @@ class Teacher extends Model
         'national_id',
         'specialization',
         'subject_id',
+        'class_id',
     ];
 
     public function subject()
@@ -23,5 +24,9 @@ class Teacher extends Model
     public function evaluations()
     {
         return $this->hasMany(TeacherStudentEvaluation::class);
+    }
+    public function class()
+    {
+    return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 }

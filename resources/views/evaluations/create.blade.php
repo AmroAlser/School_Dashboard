@@ -40,6 +40,17 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="class_id" class="form-label">الصف</label>
+                        <select name="class_id" id="class_id" class="form-select select2" required>
+                            <option value="">اختر صف...</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                                    {{ $class->name }}  <!-- تأكد من أن هذا الحقل يتضمن اسم الصف -->
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                 </div>
                 <div class="row">
