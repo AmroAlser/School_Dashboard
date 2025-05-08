@@ -9,11 +9,21 @@ use Illuminate\Http\Request;
 
 class SchoolClassController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $classes = SchoolClass::all();
-        return view('classes.index', compact('classes'));
+    // الاستعلام الأساسي للحصول على جميع الصفوف مع عدد الطلاب
+    $query = SchoolClass::withCount('students')->oldest();
+
+    // إذا تم اختيار صف معين (حسب المعرف)
+    if ($request->class) {
+        $query->where('id', $request->class);
     }
+
+    $classes = $query->paginate(10);
+
+    return view('classes.index', compact('classes'));
+    }
+
 
     public function create()
     {

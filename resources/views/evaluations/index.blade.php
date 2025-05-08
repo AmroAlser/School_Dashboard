@@ -92,16 +92,19 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('evaluations.show', $evaluation) }}" class="btn btn-info" title="عرض" data-bs-toggle="tooltip">
+                                        <a href="{{ route('evaluations.show', $evaluation) }}" class="btn btn-action btn-view rounded-3"
+                                        data-bs-toggle="tooltip" title="عرض" data-bs-toggle="tooltip">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('evaluations.edit', $evaluation) }}" class="btn btn-warning" title="تعديل" data-bs-toggle="tooltip">
+                                        <a href="{{ route('evaluations.edit', $evaluation) }}" class="btn btn-action btn-view rounded-3"
+                                        data-bs-toggle="tooltip"title="تعديل" >
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('evaluations.destroy', $evaluation) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" title="حذف" data-bs-toggle="tooltip" onclick="return confirm('هل أنت متأكد من حذف هذا التقييم؟')">
+                                            <button type="submit" class="btn btn-action btn-view rounded-3"
+                                            data-bs-toggle="tooltip" title="حذف"  onclick="return confirm('هل أنت متأكد من حذف هذا التقييم؟')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>

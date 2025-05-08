@@ -39,16 +39,19 @@
                             <td>{{ $grade->score }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('grades.show', $grade->id) }}" class="btn btn-info btn-sm">
+                                    <a href="{{ route('grades.show', $grade->id) }}"  class="btn btn-action btn-view rounded-3"
+                                        data-bs-toggle="tooltip">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('grades.edit', $grade->id) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('grades.edit', $grade->id) }}"  class="btn btn-action btn-view rounded-3"
+                                        data-bs-toggle="tooltip">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('grades.destroy', $grade->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد؟')">
+                                        <button type="submit"  class="btn btn-action btn-view rounded-3"
+                                        data-bs-toggle="tooltip" onclick="return confirm('هل أنت متأكد؟')">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

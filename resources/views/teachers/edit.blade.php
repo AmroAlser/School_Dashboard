@@ -6,7 +6,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card shadow-sm">
-        <div class="card-header bg-warning text-white">
+        <div class="card-header bg-success text-white">
             <h5 class="mb-0">
                 <i class="fas fa-user-edit me-2"></i>تعديل بيانات المعلم: {{ $teacher->name }}
             </h5>
@@ -21,7 +21,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-user"></i>
                             </span>
                             <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -37,7 +37,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="national_id" class="form-label">رقم الهوية الوطنية <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-id-card"></i>
                             </span>
                             <input type="text" class="form-control @error('national_id') is-invalid @enderror"
@@ -55,7 +55,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="specialization" class="form-label">التخصص <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-graduation-cap"></i>
                             </span>
                             <input type="text" class="form-control @error('specialization') is-invalid @enderror"
@@ -88,7 +88,7 @@
                     <a href="{{ route('teachers.show', $teacher->id) }}" class="btn btn-outline-secondary me-2">
                         <i class="fas fa-times me-1"></i> إلغاء
                     </a>
-                    <button type="submit" class="btn btn-warning text-white">
+                    <button type="submit" class="btn btn-success text-white">
                         <i class="fas fa-sync-alt me-1"></i> تحديث البيانات
                     </button>
                 </div>

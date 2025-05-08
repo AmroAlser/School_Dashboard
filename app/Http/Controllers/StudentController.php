@@ -13,29 +13,35 @@ use Carbon\Carbon;
 
 class StudentController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Student::with('class', 'semester');
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('national_id', 'like', "%$search%")
-                  ->orWhereHas('semester', function($q) use ($search) {
-                      $q->where('name', 'like', "%$search%");
-                  });
-            });
-        }
+public function index(Request $request)
+{
+    $query = Student::with('class', 'semester');
 
-        if ($request->has('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        $students = $query->orderBy('created_at')->paginate(10);
-
-        return view('students.index', compact('students'));
+    if ($request->has('search')) {
+        $search = $request->input('search');
+        $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%$search%")
+              ->orWhere('national_id', 'like', "%$search%")
+              ->orWhereHas('semester', function($q) use ($search) {
+                  $q->where('name', 'like', "%$search%");
+              });
+        });
     }
+
+    if ($request->has('status')) {
+        $query->where('status', $request->input('status'));
+    }
+
+    $students = $query->orderBy('created_at')->paginate(10);
+
+    // جلب الفصول الدراسية والصفوف لعرضها في النافذة المنبثقة
+    $semesters = \App\Models\Semester::all();
+    $classes = \App\Models\SchoolClass::all();
+
+    return view('students.index', compact('students', 'semesters', 'classes'));
+}
+
     public function create()
     {
     $semesters = Semester::all(); // عشان الفصل الدراسي
@@ -46,29 +52,41 @@ class StudentController extends Controller
 
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'national_id' => 'required|unique:students',
-            'name' => 'required',
-            'gender' => 'required|in:ذكر,أنثى',
-            'birth_date' => 'required|date',
-            'semester_id' => 'required|exists:semesters,id', // الفصل الدراسي
-            'class_id' => 'required|exists:classes,id', // الصح
-            'entry_date' => 'required|date',
-            'status' => 'required|in:مواطن,لاجئ',
-            'academic_year' => 'required|string',
-            'disability' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
-            'guardian_national_id' => 'nullable|string',
-            'transferred_from' => 'nullable|string',
-            'transferred_to' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'national_id' => 'required|unique:students',
+        'name' => 'required',
+        'gender' => 'required|in:ذكر,أنثى',
+        'birth_date' => 'required|date',
+        'semester_id' => 'required|exists:semesters,id',
+        'class_id' => 'required|exists:classes,id',
+        'entry_date' => 'required|date',
+        'status' => 'required|in:مواطن,لاجئ',
+        'academic_year' => 'required|string',
+        'disability' => 'nullable|string',
+        'phone' => 'nullable|string',
+        'address' => 'nullable|string',
+        'guardian_national_id' => 'nullable|string',
+        'transferred_from' => 'nullable|string',
+        'transferred_to' => 'nullable|string',
+        'report_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        Student::create($request->all());
+    $data = $request->all();
 
-        return redirect()->route('students.index')->with('success', 'تم إضافة الطالب بنجاح');
+    if ($request->hasFile('report_image')) {
+        $file = $request->file('report_image');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/report_images'), $fileName);
+        $data['report_image'] = 'uploads/report_images/' . $fileName;
     }
+
+    Student::create($data);
+
+    return redirect()->route('students.index')->with('success', 'تم إضافة الطالب بنجاح');
+}
+
+
 
     public function show(Student $student)
     {
@@ -86,29 +104,45 @@ class StudentController extends Controller
     }
 
     public function update(Request $request, Student $student)
-    {
-        $request->validate([
-            'national_id' => 'required|unique:students,national_id,' . $student->id,
-            'name' => 'required',
-            'gender' => 'required|in:ذكر,أنثى',
-            'birth_date' => 'required|date',
-            'semester_id' => 'required|exists:semesters,id', // الفصل الدراسي
-            'class_id' => 'required|exists:classes,id', // الصح
-            'entry_date' => 'required|date',
-            'status' => 'required|in:مواطن,لاجئ',
-            'academic_year' => 'required|string',
-            'disability' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'address' => 'nullable|string',
-            'guardian_national_id' => 'nullable|string',
-            'transferred_from' => 'nullable|string',
-            'transferred_to' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'national_id' => 'required|unique:students,national_id,' . $student->id,
+        'name' => 'required',
+        'gender' => 'required|in:ذكر,أنثى',
+        'birth_date' => 'required|date',
+        'semester_id' => 'required|exists:semesters,id',
+        'class_id' => 'required|exists:classes,id',
+        'entry_date' => 'required|date',
+        'status' => 'required|in:مواطن,لاجئ',
+        'academic_year' => 'required|string',
+        'disability' => 'nullable|string',
+        'phone' => 'nullable|string',
+        'address' => 'nullable|string',
+        'guardian_national_id' => 'nullable|string',
+        'transferred_from' => 'nullable|string',
+        'transferred_to' => 'nullable|string',
+        'report_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $student->update($request->all());
+    $data = $request->all();
 
-        return redirect()->route('students.index')->with('success', 'تم تحديث بيانات الطالب');
+    if ($request->hasFile('report_image')) {
+        // حذف الصورة القديمة إذا وُجدت
+        if ($student->report_image && file_exists(public_path($student->report_image))) {
+            unlink(public_path($student->report_image));
+        }
+
+        $file = $request->file('report_image');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/report_images'), $fileName);
+        $data['report_image'] = 'uploads/report_images/' . $fileName;
     }
+
+    $student->update($data);
+
+    return redirect()->route('students.index')->with('success', 'تم تحديث بيانات الطالب');
+}
+
 
     public function destroy(Student $student)
     {
@@ -116,10 +150,7 @@ class StudentController extends Controller
         return redirect()->route('students.index')->with('success', 'تم حذف الطالب');
     }
 
-    public function studentexcel()
-    {
-        return Excel::download(new AllStudentsExport, 'students.xlsx');
-    }
+
 
     public function import(Request $request)
     {

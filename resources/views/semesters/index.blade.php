@@ -24,7 +24,7 @@
                             <th>السنة</th>
                             <th>تاريخ البدء</th>
                             <th>تاريخ الانتهاء</th>
-                            <th>الإجراءات</th>
+                            <th width="50px"> الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,19 +35,34 @@
                             <td>{{ $semester->year }}</td>
                             <td>{{ $semester->start_date }}</td>
                             <td>{{ $semester->end_date }}</td>
-                            <td>
+                            <td >
                                 <div class="btn-group">
-                                    <a href="{{ route('semesters.show', $semester->id) }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i>
+                                    <!-- زر عرض التفاصيل -->
+                                     <a href="{{ route('semesters.show', $semester->id) }}"
+                                       class="btn btn-action btn-view rounded-3"
+                                       data-bs-toggle="tooltip"
+                                       title="عرض التفاصيل">
+                                        <i class="fas fa-eye me-1"></i>
                                     </a>
-                                    <a href="{{ route('semesters.edit', $semester->id) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i>
+
+                                    <!-- زر التعديل -->
+                                       <a href="{{  route('semesters.edit', $semester->id) }}"
+                                       class="btn btn-action btn-edit rounded-3"
+                                       data-bs-toggle="tooltip"
+                                       title="تعديل الفصل">
+                                        <i class="fas fa-pen me-1"></i>
                                     </a>
-                                    <form action="{{ route('semesters.destroy', $semester->id) }}" method="POST">
+
+                                    <!-- زر الحذف -->
+                                    <form action="{{ route('semesters.destroy', $semester->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد؟')">
-                                            <i class="fas fa-trash"></i>
+                                        <button type="submit"
+                                                class="btn btn-action btn-delete rounded-3"
+                                                data-bs-toggle="tooltip"
+                                                title="حذف الفصل"
+                                                onclick="return confirm('هل أنت متأكد من حذف الفصل {{ $semester->name }}؟')">
+                                            <i class="fas fa-trash me-1"></i>
                                         </button>
                                     </form>
                                 </div>

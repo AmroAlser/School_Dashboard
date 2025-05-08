@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Semester;
+use App\Models\SchoolClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -42,7 +43,8 @@ class SemesterController extends Controller
 
     public function show(Semester $semester)
     {
-        return view('semesters.show', compact('semester'));
+        $classesCount = SchoolClass::count();
+        return view('semesters.show', compact('semester','classesCount'));
     }
 
     public function edit(Semester $semester)

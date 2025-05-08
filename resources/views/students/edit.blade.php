@@ -6,14 +6,14 @@
 @section('content')
 <div class="container-fluid">
     <div class="card shadow-sm">
-        <div class="card-header bg-warning text-white">
+        <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
                 <i class="fas fa-user-edit me-2"></i>تعديل بيانات الطالب: {{ $student->name }}
             </h5>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('students.update', $student->id) }}" method="POST" class="needs-validation" novalidate>
+            <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 @csrf
                 @method('PUT')
 
@@ -22,7 +22,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="national_id" class="form-label">رقم الهوية الوطنية <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-id-card"></i>
                             </span>
                             <input type="text" class="form-control @error('national_id') is-invalid @enderror"
@@ -38,7 +38,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-user"></i>
                             </span>
                             <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -69,7 +69,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="birth_date" class="form-label">تاريخ الميلاد <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-calendar-alt"></i>
                             </span>
                             <input type="date" class="form-control @error('birth_date') is-invalid @enderror"
@@ -149,7 +149,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="entry_date" class="form-label">تاريخ التسجيل <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-calendar-check"></i>
                             </span>
                             <input type="date" class="form-control @error('entry_date') is-invalid @enderror"
@@ -167,7 +167,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">رقم الهاتف</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-phone"></i>
                             </span>
                             <input type="text" class="form-control @error('phone') is-invalid @enderror"
@@ -183,7 +183,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="guardian_national_id" class="form-label">رقم هوية ولي الأمر</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-id-card-alt"></i>
                             </span>
                             <input type="text" class="form-control @error('guardian_national_id') is-invalid @enderror"
@@ -202,7 +202,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="disability" class="form-label">الإعاقة (إن وجدت)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-wheelchair"></i>
                             </span>
                             <input type="text" class="form-control @error('disability') is-invalid @enderror"
@@ -218,7 +218,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="address" class="form-label">العنوان</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-map-marker-alt"></i>
                             </span>
                             <input type="text" class="form-control @error('address') is-invalid @enderror"
@@ -237,7 +237,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="transferred_from" class="form-label">محول من (إن وجد)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-school"></i>
                             </span>
                             <input type="text" class="form-control @error('transferred_from') is-invalid @enderror"
@@ -253,7 +253,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="transferred_to" class="form-label">محول إلى (إن وجد)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-warning text-white">
+                            <span class="input-group-text bg-primary text-white">
                                 <i class="fas fa-school"></i>
                             </span>
                             <input type="text" class="form-control @error('transferred_to') is-invalid @enderror"
@@ -266,12 +266,34 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="photo" class="form-label">الصورة التقرير</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="fas fa-image"></i>
+                            </span>
+                            <input type="file" class="form-control @error('photo') is-invalid @enderror"
+                                   id="photo" name="photo" accept="image/*">
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        @if($student->photo)
+                            <div class="mt-2">
+                                <strong>الصورة الحالية:</strong><br>
+                                <img src="{{ asset('uploads/report_images/' . $student->report_image) }}" alt="Student report_image"
+                                     class="img-thumbnail" width="120">
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ route('students.show', $student->id) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i> إلغاء
                     </a>
-                    <button type="submit" class="btn btn-warning text-white">
+                    <button type="submit" class="btn btn-primary text-white">
                         <i class="fas fa-save me-1"></i> حفظ التعديلات
                     </button>
                 </div>

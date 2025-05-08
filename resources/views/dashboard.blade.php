@@ -12,10 +12,14 @@
             <div class="card-body p-4">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h4 class="mb-3 text-white">
-                            <i class="fas fa-graduation-cap me-2"></i>
-                            مرحباً بك في نظام إدارة المدرسة
-                        </h4>
+                        <div class="d-flex align-items-center mb-3">
+                            <h4 class="mb-0 text-white">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                مرحباً بك في
+                            </h4>
+                            <img src="{{ asset('images/headerLogoar1.png') }}" alt="شعار النظام" style="height: 40px; margin: 0 10px;">
+                        </div>
+                        <h4 class="text-white mb-3">نظام إدارة المدرسة الهلال الخاصة</h4>
                         <p class="mb-0 text-white-50">
                             نظام متكامل لإدارة الطلاب، المعلمين، الصفوف الدراسية والتقييمات
                         </p>
@@ -144,7 +148,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('students.create') }}"><i class="fas fa-user-plus me-2"></i>إضافة طالب</a></li>
-                            <li><a class="dropdown-item" href="{{ route('students.excel') }}"><i class="fas fa-file-export me-2"></i>تصدير البيانات</a></li>
+                            <li><a class="dropdown-item" href="{{route('reports.allstudents')}}"><i class="fas fa-file-export me-2"></i>تصدير البيانات</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('students.index') }}"><i class="fas fa-list me-2"></i>عرض الكل</a></li>
                         </ul>
@@ -156,76 +160,88 @@
                     </div>
                     <div class="row text-center">
                         <div class="col-4 border-end">
-                            <h5 class="mb-1">35</h5>
+                            <h5 class="mb-1">{{ $latestStudents->count() }}</h5>
                             <small class="text-muted">جدد</small>
                         </div>
                         <div class="col-4 border-end">
-                            <h5 class="mb-1">82%</h5>
-                            <small class="text-muted">حضور</small>
+                            <h5 class="mb-1">{{ round(($studentsCount > 0 ? $latestStudents->count() / $studentsCount * 100 : 0), 2 ) }}% </h5>
+                            <small class="text-muted">نسبة الجدد</small>
                         </div>
                         <div class="col-4">
-                            <h5 class="mb-1">24</h5>
-                            <small class="text-muted">متفوقون</small>
+                            <h5 class="mb-1">{{ $studentsCount }}</h5>
+                            <small class="text-muted">إجمالي الطلاب</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- قسم الصفوف الدراسية -->
+        <!-- قسم الدورات -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                    <h6 class="m-0 font-weight-bold text-info">
-                        <i class="fas fa-chalkboard me-2"></i>إدارة الصفوف
+                    <h6 class="m-0 font-weight-bold text-purple">
+                        <i class="fas fa-certificate me-2"></i>إدارة الدورات
                     </h6>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm btn-outline-purple dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('classes.create') }}"><i class="fas fa-plus me-2"></i>إضافة صف</a></li>
+                            <li><a class="dropdown-item" href="{{ route('courses.create') }}"><i class="fas fa-plus me-2"></i>إضافة دورة</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('classes.index') }}"><i class="fas fa-list me-2"></i>عرض الكل</a></li>
+                            <li><a class="dropdown-item" href="{{ route('courses.index') }}"><i class="fas fa-list me-2"></i>عرض الكل</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-sm table-borderless">
-                            <thead class="bg-light">
+                            <thead class="bg-light-purple">
                                 <tr>
-                                    <th>الصف</th>
-                                    <th>عدد الطلاب</th>
-                                    <th>المعلمون</th>
-                                    <th class="text-end">الحالة</th>
+                                    <th>اسم الدورة</th>
+                                    <th>المشرف</th>
+                                    <th>عدد المشاركين</th>
+                                    <th>تاريخ البدء</th>
+                                    <th class="text-end">تاريخ الانتهاء</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($latestClasses as $class)
+                                @foreach($latestCourses as $course)
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-sm me-2">
-                                                <span class="avatar-title bg-info-light rounded-circle">
-                                                    <i class="fas fa-chalkboard text-info"></i>
+                                                <span class="avatar-title bg-purple-light rounded-circle">
+                                                    <i class="fas fa-certificate text-purple"></i>
                                                 </span>
                                             </div>
-                                            <div>{{ $class->name }}</div>
+                                            <div>{{ $course->title }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ $class->students_count ?? 0 }}</td>
-                                    <td>3</td>
+                                    <td>{{ $course->instructor }}</td>
+                                    <td>{{ $course->participants }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($course->start_date)->format('Y-m-d') }}</td>
                                     <td class="text-end">
-                                        <span class="badge bg-success">نشط</span>
+                                        @php
+                                            $endDate = \Carbon\Carbon::parse($course->end_date);
+                                            $isActive = $endDate->isFuture(); // true لو التاريخ بعد اليوم
+                                        @endphp
+                                        <span class="badge bg-{{ $isActive ? 'success' : 'secondary' }}">
+                                            {{ $isActive ? 'نشطة' : 'منتهية' }}
+                                        </span>
+                                        <div style="font-size: 0.8em; color: #888;">
+                                            {{ $endDate->format('Y-m-d') }}
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
                     </div>
-                    <a href="{{ route('classes.index') }}" class="btn btn-sm btn-info w-100 mt-3">
-                        <i class="fas fa-list me-1"></i> عرض جميع الصفوف
+                    <a href="{{ route('courses.index') }}" class="btn btn-sm btn-purple w-100 mt-3">
+                        <i class="fas fa-list me-1"></i> عرض جميع الدورات
                     </a>
                 </div>
             </div>
@@ -234,42 +250,48 @@
 
     <!-- الأقسام الثانوية المحسنة -->
     <div class="row">
-        <!-- المعلمون -->
+        <!-- قسم الأوراق والتقارير -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                    <h6 class="m-0 font-weight-bold text-success">
-                        <i class="fas fa-chalkboard-teacher me-2"></i>إدارة المعلمين
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-file-alt me-2"></i>الأوراق والتقارير
                     </h6>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('teachers.create') }}"><i class="fas fa-user-plus me-2"></i>تعيين معلم</a></li>
+                            <li><a class="dropdown-item" href="{{ route('papers.create') }}"><i class="fas fa-plus me-2"></i>إضافة ورقة</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('teachers.index') }}"><i class="fas fa-list me-2"></i>عرض الكل</a></li>
+                            <li><a class="dropdown-item" href="{{ route('papers.index') }}"><i class="fas fa-list me-2"></i>عرض الكل</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="chart-pie mb-4">
-                        <canvas id="teachersChart" height="200"></canvas>
+                    <div class="list-group list-group-flush">
+                        @foreach($latestPapers as $paper)
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-file-{{ in_array(pathinfo($paper->file, PATHINFO_EXTENSION), ['pdf']) ? 'pdf' : (in_array(pathinfo($paper->file, PATHINFO_EXTENSION), ['doc', 'docx']) ? 'word' : 'alt') }} text-danger fa-2x"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">{{ $paper->title }}</h6>
+                                    <small class="text-muted">تم الرفع: {{ $paper->created_at->diffForHumans() }}</small>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <a href="{{ route('papers.show', $paper->id) }}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
-                    <div class="row text-center">
-                        <div class="col-4 border-end">
-                            <h5 class="mb-1">12</h5>
-                            <small class="text-muted">أكفاء</small>
-                        </div>
-                        <div class="col-4 border-end">
-                            <h5 class="mb-1">88%</h5>
-                            <small class="text-muted">تقييم</small>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="mb-1">5</h5>
-                            <small class="text-muted">جدد</small>
-                        </div>
-                    </div>
+                    <a href="{{ route('papers.index') }}" class="btn btn-sm btn-danger w-100 mt-3">
+                        <i class="fas fa-list me-1"></i> عرض جميع الأوراق
+                    </a>
                 </div>
             </div>
         </div>
@@ -294,36 +316,26 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
+                        @foreach($activeSemesters as $semester)
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-grow-1 me-3">
-                                <h6 class="mb-1">الفصل الأول 2023-2024</h6>
+                                <h6 class="mb-1">{{ $semester->name }}</h6>
                                 <div class="progress mb-1" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                    @php
+                                        $progress = $semester->progress();
+                                    @endphp
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <small class="text-muted d-flex justify-content-between">
-                                    <span>15/08/2023 - 20/12/2023</span>
-                                    <span>75% مكتمل</span>
+                                    <span>{{ $semester->start_date->format('d/m/Y') }} - {{ $semester->end_date->format('d/m/Y') }}</span>
+                                    <span>{{ $progress }}% مكتمل</span>
                                 </small>
                             </div>
                             <div class="flex-shrink-0">
-                                <span class="badge bg-warning">جاري</span>
+                                <span class="badge bg-{{ $semester->isActive() ? 'warning' : 'success' }}">{{ $semester->isActive() ? 'جاري' : 'منتهي' }}</span>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1 me-3">
-                                <h6 class="mb-1">الفصل الثاني 2022-2023</h6>
-                                <div class="progress mb-1" style="height: 8px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <small class="text-muted d-flex justify-content-between">
-                                    <span>10/01/2023 - 25/05/2023</span>
-                                    <span>منتهي</span>
-                                </small>
-                            </div>
-                            <div class="flex-shrink-0">
-                                <span class="badge bg-success">منتهي</span>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                     <a href="{{ route('semesters.index') }}" class="btn btn-sm btn-warning w-100">
                         <i class="fas fa-calendar-check me-1"></i> عرض جميع الفصول
@@ -339,10 +351,10 @@
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                    <h6 class="m-0 font-weight-bold text-danger">
+                    <h6 class="m-0 font-weight-bold text-teal">
                         <i class="fas fa-star-half-alt me-2"></i>أحدث التقييمات
                     </h6>
-                    <a href="{{ route('evaluations.index') }}" class="btn btn-sm btn-outline-danger">
+                    <a href="{{ route('evaluations.index') }}" class="btn btn-sm btn-outline-teal">
                         <i class="fas fa-list"></i>
                     </a>
                 </div>
@@ -351,14 +363,14 @@
                         @foreach($latestEvaluations as $evaluation)
                         <div class="list-group-item border-0 px-0 py-2">
                             <div class="d-flex align-items-center">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($evaluation->student->name) }}&background=4e73df&color=fff"
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($evaluation->student->name) }}&background=20c9a6&color=fff"
                                      width="40" height="40" class="rounded-circle me-3" alt="طالب">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-0">{{ $evaluation->student->name }}</h6>
                                     <small class="text-muted">تقييم من {{ $evaluation->teacher->name }}</small>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <span class="badge bg-primary">{{ Str::limit($evaluation->evaluation, 20) }}</span>
+                                    <span class="badge bg-teal">{{ Str::limit($evaluation->evaluation, 20) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -372,17 +384,17 @@
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                    <h6 class="m-0 font-weight-bold text-purple">
+                    <h6 class="m-0 font-weight-bold text-indigo">
                         <i class="fas fa-user-plus me-2"></i>أحدث الطلاب
                     </h6>
-                    <a href="{{ route('students.index') }}" class="btn btn-sm btn-outline-purple">
+                    <a href="{{ route('students.index') }}" class="btn btn-sm btn-outline-indigo">
                         <i class="fas fa-list"></i>
                     </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-sm table-borderless">
-                            <thead class="bg-light">
+                            <thead class="bg-light-indigo">
                                 <tr>
                                     <th>الطالب</th>
                                     <th>الصف</th>
@@ -395,7 +407,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=6f42c1&color=fff"
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($student->name) }}&background=6610f2&color=fff"
                                                  width="30" height="30" class="rounded-circle me-2" alt="طالب">
                                             <div>{{ $student->name }}</div>
                                         </div>
@@ -424,11 +436,17 @@
     var studentsChart = new Chart(ctxStudents, {
         type: 'doughnut',
         data: {
-            labels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع'],
+            labels: {!! json_encode($studentsByClass->keys()) !!},
             datasets: [{
-                data: [35, 28, 20, 17],
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
-                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a'],
+                data: {!! json_encode($studentsByClass->values()) !!},
+                backgroundColor: [
+                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e',
+                    '#e74a3b', '#858796', '#5a5c69', '#3a3b45'
+                ],
+                hoverBackgroundColor: [
+                    '#2e59d9', '#17a673', '#2c9faf', '#dda20a',
+                    '#be2617', '#6b6d7d', '#4a4b54', '#2a2b32'
+                ],
                 hoverBorderColor: "rgba(234, 236, 244, 1)",
                 borderWidth: 2
             }],
@@ -447,42 +465,16 @@
                 },
                 tooltip: {
                     rtl: true,
-                    textDirection: 'rtl'
-                }
-            },
-            cutout: '75%',
-        },
-    });
-
-    // رسم بياني للمعلمين حسب التخصص
-    var ctxTeachers = document.getElementById('teachersChart').getContext('2d');
-    var teachersChart = new Chart(ctxTeachers, {
-        type: 'doughnut',
-        data: {
-            labels: ['العلوم', 'الرياضيات', 'اللغات', 'الاجتماعيات', 'الفنون'],
-            datasets: [{
-                data: [12, 8, 6, 4, 3],
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
-                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
-                borderWidth: 2
-            }],
-        },
-        options: {
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    rtl: true,
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        pointStyle: 'circle'
+                    textDirection: 'rtl',
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.label || '';
+                            var value = context.raw || 0;
+                            var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            var percentage = Math.round((value / total) * 100);
+                            return label + ': ' + value + ' (' + percentage + '%)';
+                        }
                     }
-                },
-                tooltip: {
-                    rtl: true,
-                    textDirection: 'rtl'
                 }
             },
             cutout: '75%',
@@ -497,6 +489,8 @@
         --primary-color: #4e73df;
         --primary-dark: #224abe;
         --purple: #6f42c1;
+        --indigo: #6610f2;
+        --teal: #20c9a6;
         --border-radius: 0.5rem;
         --transition: all 0.3s ease;
     }
@@ -541,12 +535,50 @@
         background-color: rgba(246, 194, 62, 0.1);
     }
 
-    .bg-purple {
-        background-color: var(--purple);
+    .bg-purple-light {
+        background-color: rgba(111, 66, 193, 0.1);
+    }
+
+    .bg-light-purple {
+        background-color: rgba(111, 66, 193, 0.05);
+    }
+
+    .bg-light-indigo {
+        background-color: rgba(102, 16, 242, 0.05);
     }
 
     .text-purple {
         color: var(--purple);
+    }
+
+    .text-indigo {
+        color: var(--indigo);
+    }
+
+    .text-teal {
+        color: var(--teal);
+    }
+
+    .bg-purple {
+        background-color: var(--purple);
+    }
+
+    .bg-indigo {
+        background-color: var(--indigo);
+    }
+
+    .bg-teal {
+        background-color: var(--teal);
+    }
+
+    .btn-purple {
+        background-color: var(--purple);
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #5e32a8;
+        color: white;
     }
 
     .btn-outline-purple {
@@ -559,13 +591,24 @@
         color: white;
     }
 
-    .progress-text {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        font-size: 0.75rem;
+    .btn-outline-indigo {
+        color: var(--indigo);
+        border-color: var(--indigo);
+    }
+
+    .btn-outline-indigo:hover {
+        background-color: var(--indigo);
         color: white;
-        text-shadow: 0 0 2px rgba(0,0,0,0.3);
+    }
+
+    .btn-outline-teal {
+        color: var(--teal);
+        border-color: var(--teal);
+    }
+
+    .btn-outline-teal:hover {
+        background-color: var(--teal);
+        color: white;
     }
 
     .list-group-item {

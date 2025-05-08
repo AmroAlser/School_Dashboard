@@ -5,94 +5,142 @@ namespace App\Exports;
 use App\Models\Student;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Carbon\Carbon;
 
-class StudentsExport implements FromCollection, WithHeadings, WithStyles, WithColumnFormatting
+class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithTitle, ShouldAutoSize
 {
-    /**
-    * استرجاع البيانات التي سيتم تصديرها.
-    *
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
+    public function title(): string
     {
-        // تحميل العلاقات مع الصف والفصل الدراسي للحصول على الأسماء
-        return Student::with(['class', 'semester'])
-            ->get()
-            ->map(function ($student) {
-                return [
-                    'name' => $student->name,
-                    'national_id' => $student->national_id,
-                    'gender' => $student->gender,
-                    'birth_date' => $student->birth_date,
-                    'class' => $student->class ? $student->class->name : 'غير محدد', // استرجاع اسم الصف
-                    'semester' => $student->semester ? $student->semester->name : 'غير محدد', // استرجاع اسم الفصل الدراسي
-                    'academic_year' => $student->academic_year,
-                    'status' => $student->status,
-                ];
-            });
+        return 'سجل الطلاب';
     }
 
-    /**
-     * إضافة رؤوس الأعمدة
-     *
-     * @return array
-     */
+    public function collection()
+    {
+        return Student::with(['class', 'semester'])
+            ->orderBy('class_id')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function map($student): array
+    {
+        return [
+            $student->name,
+            $student->national_id,
+            $this->formatGender($student->gender),
+            $student->birth_date ? Carbon::parse($student->birth_date)->format('d/m/Y') : 'غير متوفر',
+            $student->class ? $student->class->name : 'غير محدد',
+            $student->semester ? $student->semester->name : 'غير محدد',
+            $student->academic_year,
+            $this->formatStatus($student->status),
+            $student->phone ?: 'غير متوفر',
+            $student->address ?: 'غير متوفر',
+            $student->disability ?: 'لا يوجد',
+            $student->guardian_national_id ?: 'غير متوفر',
+            $student->entry_date ? Carbon::parse($student->entry_date)->format('d/m/Y') : 'غير متوفر',
+        ];
+    }
+
     public function headings(): array
     {
         return [
-            'الاسم',
+            'اسم الطالب',
             'رقم الهوية',
             'الجنس',
             'تاريخ الميلاد',
-            'الصف',
+            'الصف الدراسي',
             'الفصل الدراسي',
             'السنة الدراسية',
             'الحالة',
+            'رقم الجوال',
+            'العنوان',
+            'الإعاقة',
+            'هوية ولي الأمر',
+            'تاريخ التسجيل',
         ];
     }
 
-    /**
-     * تخصيص تنسيق الأعمدة
-     *
-     * @return array
-     */
-    public function styles($sheet)
+    public function styles(Worksheet $sheet)
     {
-        // جعل النص في رؤوس الأعمدة عريضًا ومركزيًا
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        // إضافة تنسيق للصفوف
-        $sheet->getStyle('A2:H' . $sheet->getHighestRow())
-              ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        return [
-            // تنسيق الخلايا
-            'A1:H1' => [
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                ],
-                'font' => [
-                    'bold' => true,
+        // تنسيق رأس الجدول
+        $sheet->getStyle('A1:M1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '9b59b6'],
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
                 ],
             ],
-        ];
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // تنسيق خلايا البيانات
+        $sheet->getStyle('A2:M'.$sheet->getHighestRow())->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'DDDDDD'],
+                ],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // تلوين الحالة
+        $highestRow = $sheet->getHighestRow();
+        for ($row = 2; $row <= $highestRow; $row++) {
+            $status = $sheet->getCell("H{$row}")->getValue();
+            $color = $this->getStatusColor($status);
+            $sheet->getStyle("H{$row}")->getFont()->getColor()->setRGB($color);
+        }
+
+        // تجميد رأس الجدول
+        $sheet->freezePane('A2');
+
+        return [];
     }
 
-    /**
-     * تنسيق بعض الأعمدة
-     *
-     * @return array
-     */
+    private function formatGender($gender)
+    {
+        return $gender === 'ذكر' ? 'ذكر' : 'أنثى';
+    }
+
+    private function formatStatus($status)
+    {
+        return $status === 'مواطن' ? 'مواطن' : 'لاجئ';
+    }
+
+    private function getStatusColor($status)
+    {
+        return $status === 'مواطن' ? '2ecc71' : 'e74c3c';
+    }
+
     public function columnFormats(): array
     {
         return [
-            'D' => NumberFormat::FORMAT_DATE_DDMMYYYY, // تنسيق التاريخ
+            'D' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'M' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
 }

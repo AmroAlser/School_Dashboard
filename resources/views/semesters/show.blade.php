@@ -24,7 +24,7 @@
                     <div class="mb-4">
                         <h6 class="text-muted">الإحصاءات</h6>
                         <hr>
-                        <p><strong>عدد الصفوف:</strong> {{ $semester->grades->count() }}</p>
+                        <p><strong>عدد الطلاب</strong> {{ $semester->students->count() }}</p>
                         <p><strong>تاريخ الإنشاء:</strong> {{ $semester->created_at }}</p>
                         <p><strong>آخر تحديث:</strong> {{ $semester->updated_at}}</p>
                     </div>

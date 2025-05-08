@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentsExport;
 use App\Exports\GradesExport;
 use App\Exports\SemestersExport;
+use App\Exports\AllStudentsExport;
+use App\Exports\TeachersExport;
 
 
 class ReportController extends Controller
@@ -65,6 +67,15 @@ class ReportController extends Controller
         $semesterFilter = $request->input('semester_filter');  // افترض أنه هناك فلتر باسم semester_filter في الـ request
 
     // تصدير التقرير مع الفلاتر المطبقة
-    return Excel::download(new SemestersExport($semesterFilter), 'semesters_report.xlsx');
+        return Excel::download(new SemestersExport($semesterFilter), 'semesters_report.xlsx');
+    }
+    public function exportallStudents()
+    {
+        $filename = 'students_' . date('Y-m-d') . '.xlsx';
+        return Excel::download(new AllStudentsExport(), $filename);
+    }
+    public function exportTeachers()
+    {
+        return Excel::download(new TeachersExport, 'teachers.xlsx');
     }
 }

@@ -7,44 +7,51 @@ use App\Models\Teacher;
 use App\Models\Subject;
 use App\Models\Semester;
 use App\Models\SchoolClass;
-use App\Models\TeacherStudentEvaluation; // التأكد من استخدام اسم الموديل الصحيح
+use App\Models\TeacherStudentEvaluation;
+use App\Models\Course;
+use App\Models\Paper;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // counts for stat cards (الأعداد الإجمالية للبطاقات العلوية)
+        // إحصائيات البطاقات العلوية
         $studentsCount = Student::count();
         $teachersCount = Teacher::count();
-        $subjectsCount = Subject::count();
-        $semestersCount = Semester::count();
-        $evaluationsCount = TeacherStudentEvaluation::count();
         $classesCount = SchoolClass::count();
+        $semestersCount = Semester::count();
 
-        // Data for 'Latest' sections (جلب أحدث السجلات للأقسام السفلية)
-        // يمكنك تعديل الرقم (مثلاً 5) لتغيير عدد السجلات التي تظهر
-        $latestStudents = Student::latest()->take(5)->with('class')->get(); // جلب آخر 5 طلاب مع علاقتهم بالصف
-        $latestEvaluations = TeacherStudentEvaluation::latest()->take(5)->with(['student', 'teacher'])->get(); // جلب آخر 5 تقييمات مع علاقتهم بالطلاب والمعلمين
-        $latestClasses = SchoolClass::latest()->take(5)->withCount('students')->get(); // جلب آخر 5 صفوف مع عدد طلاب كل صف
+        // بيانات قسم الطلاب
+        $latestStudents = Student::latest()->take(5)->with('class')->get();
+        $studentsByClass = SchoolClass::withCount('students')->get()
+            ->mapWithKeys(function ($class) {
+                return [$class->name => $class->students_count];
+            });
 
-        // Note: Data for charts (studentsChart, teachersChart) is not fetched in this controller
-        // as the Blade template only has the <canvas> tags without actual chart data implementation.
-        // If you implement charts later, you'll need to fetch and format the required data here.
+        // بيانات قسم الدورات
+        $latestCourses = Course::latest()->take(5)->get();
 
-        // Note: The percentage/new counts in the stat cards are hardcoded in your Blade.
-        // Making them dynamic requires more complex logic here (e.g., calculating growth).
+        // بيانات قسم الأوراق والتقارير
+        $latestPapers = Paper::latest()->take(5)->get();
 
-        // Pass all necessary data to the view
+        // بيانات قسم الفصول الدراسية النشطة
+        $activeSemesters = Semester::where('end_date', '>=', now())->get();
+
+        // بيانات قسم أحدث التقييمات
+        $latestEvaluations = TeacherStudentEvaluation::latest()->take(5)->with(['student', 'teacher'])->get();
+
         return view('dashboard', compact(
             'studentsCount',
             'teachersCount',
-            'subjectsCount',
-            'evaluationsCount',
-            'semestersCount',
             'classesCount',
-            'latestStudents',    // Added latest students data
-            'latestEvaluations', // Added latest evaluations data
-            'latestClasses'      // Added latest classes data
+            'semestersCount',
+            'latestStudents',
+            'studentsByClass',
+            'latestCourses',
+            'latestPapers',
+            'activeSemesters',
+            'latestEvaluations'
         ));
     }
 }

@@ -12,7 +12,7 @@ class Student extends Model
     protected $fillable = [
         'national_id', 'name', 'gender', 'birth_date', 'disability', 'phone',
         'semester_id', 'class_id', 'address', 'entry_date', 'guardian_national_id', 'status',
-        'academic_year', 'transferred_from', 'transferred_to'
+        'academic_year', 'transferred_from', 'transferred_to','report_image'
     ];
 
 

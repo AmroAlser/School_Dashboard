@@ -62,35 +62,39 @@
                                 <td>
                                     <span class="badge bg-info">{{ $subject->teachers_count ?? 0 }}</span>
                                 </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('subjects.show', $subject->id) }}"
-                                           class="btn btn-info"
-                                           title="عرض التفاصيل"
-                                           data-bs-toggle="tooltip">
-                                            <i class="fas fa-eye"></i>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <!-- زر عرض التفاصيل -->
+                                         <a href="{{ route('subjects.show', $subject->id) }}"
+                                           class="btn btn-action btn-view rounded-3"
+                                           data-bs-toggle="tooltip"
+                                           title="عرض التفاصيل">
+                                            <i class="fas fa-eye me-1"></i>
                                         </a>
-                                        <a href="{{ route('subjects.edit', $subject->id) }}"
-                                           class="btn btn-warning"
-                                           title="تعديل"
-                                           data-bs-toggle="tooltip">
-                                            <i class="fas fa-edit"></i>
+
+                                        <!-- زر التعديل -->
+                                           <a href="{{ route('subjects.edit', $subject->id) }}"
+                                           class="btn btn-action btn-edit rounded-3"
+                                           data-bs-toggle="tooltip"
+                                           title="تعديل المادة">
+                                            <i class="fas fa-pen me-1"></i>
                                         </a>
-                                        <form action="{{ route('subjects.destroy', $subject->id) }}"
-                                              method="POST"
-                                              class="d-inline">
+
+                                        <!-- زر الحذف -->
+                                        <form action="{{ route('subjects.destroy', $subject->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="btn btn-danger"
-                                                    title="حذف"
+                                                    class="btn btn-action btn-delete rounded-3"
                                                     data-bs-toggle="tooltip"
-                                                    onclick="return confirm('هل أنت متأكد من حذف المادة {{ $subject->name }}؟ سيتم حذف جميع البيانات المرتبطة بها')">
-                                                <i class="fas fa-trash-alt"></i>
+                                                    title="حذف المادة"
+                                                    onclick="return confirm('هل أنت متأكد من حذف المادة {{ $subject->name }}؟')">
+                                                <i class="fas fa-trash me-1"></i>
                                             </button>
                                         </form>
                                     </div>
                                 </td>
+                               
                             </tr>
                         @empty
                             <tr>

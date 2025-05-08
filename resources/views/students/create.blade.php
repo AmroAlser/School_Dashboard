@@ -23,7 +23,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('students.store') }}" method="POST" class="needs-validation" novalidate>
+            <form action="{{ route('students.store') }}" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -53,7 +53,7 @@
                             <input type="text" class="form-control @error('name') is-invalid @enderror"
                                    id="name" name="name"
                                    value="{{ old('name') }}" required
-                                   placeholder="الاسم الثلاثي للطالب">
+                                   placeholder="الاسم الرباعي للطالب">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -107,7 +107,7 @@
                 <!-- الصف الثالث -->
                 <div class="row">
                     <div class="form-group">
-                        <label for="class_id">الصف الدراسي</label>
+                        <label for="class_id" class="form-label">الصف الدراسي</label>
                         <select name="class_id" id="class_id" class="form-control" required>
                             <option value="">اختر الصف</option>
                             @foreach($classes as $class)
@@ -269,6 +269,11 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-label">
+                    <label for="report_image">صورة التقرير</label>
+                    <input type="file" name="report_image" id="report_image" class="form-control">
+                </div>
+
 
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ route('students.index') }}" class="btn btn-secondary">

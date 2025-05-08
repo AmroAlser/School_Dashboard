@@ -45,8 +45,11 @@ class SubjectController extends Controller
 
     public function show(Subject $subject)
     {
+        $subject->loadCount('teachers');   // تحميل عدد المعلمين
+        $subject->load('teachers');         // تحميل بيانات المعلمين أنفسهم
         return view('subjects.show', compact('subject'));
     }
+
 
     public function edit(Subject $subject)
     {
