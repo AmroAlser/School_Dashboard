@@ -32,6 +32,10 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="job_number" class="form-label">الرقم الوظيفي</label>
+                        <input type="text" class="form-control" name="job_number" id="job_number" value="{{ old('job_number', $teacher->job_number ?? '') }}">
+                    </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="national_id" class="form-label">رقم الهوية الوطنية <span class="text-danger">*</span></label>
@@ -80,6 +84,15 @@
                         @error('subject_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="tasks" class="form-label">المهام</label>
+                        <textarea class="form-control" name="tasks" id="tasks" rows="3">{{ old('tasks', $teacher->tasks ?? '') }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="task_date" class="form-label">تاريخ المهمة</label>
+                        <input type="date" class="form-control" name="task_date" id="task_date" value="{{ old('task_date', isset($teacher->task_date) ? $teacher->task_date->format('Y-m-d') : '') }}">
                     </div>
                 </div>
 

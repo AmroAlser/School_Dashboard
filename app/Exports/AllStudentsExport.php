@@ -55,7 +55,7 @@ class AllStudentsExport implements
             $student->transferred_from ?? 'لا ينطبق',
             $student->transferred_to ?? '*',
             $this->formatDate($student->entry_date),
-            '', // سيتم استبدالها بالصورة عبر WithDrawings
+            '', // سيتم استبدالها بالصورة
         ];
     }
 
@@ -117,6 +117,23 @@ class AllStudentsExport implements
             }
         }
 
+        // ضبط أبعاد الصفوف والأعمدة للصور
+        $sheet->getColumnDimension('Q')->setWidth(20); // عرض عمود الصور
+
+        for ($row = 2; $row <= $highestRow; $row++) {
+            $sheet->getRowDimension($row)->setRowHeight(80); // ارتفاع الصفوف
+        }
+
+        // إضافة حدود لعمود الصور
+        $sheet->getStyle("Q2:Q{$highestRow}")->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000']
+                ]
+            ]
+        ]);
+
         $sheet->freezePane('A2');
     }
 
@@ -124,21 +141,34 @@ class AllStudentsExport implements
     {
         $drawings = [];
         $students = $this->collection();
+        $row = 2; // يبدأ من الصف الثاني بعد العناوين
 
-        foreach ($students as $index => $student) {
+        foreach ($students as $student) {
             if (!empty($student->report_image)) {
                 $path = public_path($student->report_image);
+
                 if (file_exists($path)) {
                     $drawing = new Drawing();
                     $drawing->setName('Report Image');
                     $drawing->setDescription('Report Image');
                     $drawing->setPath($path);
-                    $drawing->setCoordinates('Q' . ($index + 2)); // Q = العمود 17
-                    $drawing->setHeight(100);
-                    $drawing->setWidth(100);
+                    $drawing->setCoordinates('Q' . $row);
+
+                    // ضبط أبعاد الصورة لتتناسب مع الخلية
+                    $drawing->setHeight(70); // أقل من ارتفاع الصف لترك هامش
+                    $drawing->setWidth(70); // أقل من عرض العمود لترك هامش
+
+                    // ضبط الهوامش داخل الخلية
+                    $drawing->setOffsetX(5);
+                    $drawing->setOffsetY(5);
+
+                    // للحفاظ على نسبة العرض إلى الارتفاع
+                    $drawing->setResizeProportional(true);
+
                     $drawings[] = $drawing;
                 }
             }
+            $row++;
         }
 
         return $drawings;

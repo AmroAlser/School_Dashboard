@@ -33,8 +33,12 @@
                     <div class="course-header mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="text-purple">{{ $course->title }}</h3>
-                            <span class="badge bg-{{ $course->status == 'active' ? 'success' : 'secondary' }}">
-                                {{ $course->status == 'active' ? 'نشطة' : 'منتهية' }}
+                            @php
+                            $endDate = \Carbon\Carbon::parse($course->end_date);
+                            $isActive = $endDate->isFuture(); // true لو التاريخ بعد اليوم
+                        @endphp
+                               <span class="badge bg-{{ $isActive ? 'success' : 'secondary' }}">
+                                {{ $isActive ? 'نشطة' : 'منتهية' }}
                             </span>
                         </div>
 

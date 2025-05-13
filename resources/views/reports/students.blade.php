@@ -6,16 +6,40 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <!-- Welcome Card -->
+    <div class="welcome-card mb-4">
+        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #6610f2, #6f42c1);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="text-white mb-3">
+                            <i class="fas fa-users me-2"></i> تقرير الطلاب
+                        </h4>
+                        <p class="mb-0 text-white-50">
+                            قائمة كاملة بجميع الطلاب المسجلين في النظام
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="bg-white bg-opacity-25 p-3 rounded d-inline-block">
+                            <i class="fas fa-user-graduate text-white fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-indigo text-white d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0">
-                <i class="fas fa-users me-2"></i>تقرير الطلاب
+                <i class="fas fa-users me-2"></i> الطلاب المسجلين
             </h5>
-            <div>
+            <div class="d-flex gap-2">
                 <button class="btn btn-light" onclick="window.print()">
                     <i class="fas fa-print me-1"></i> طباعة
                 </button>
-                <a href="{{route('export.students')}}" class="btn btn-success ms-2">
+                <a href="{{ route('export.students') }}" class="btn btn-light">
                     <i class="fas fa-file-excel me-1"></i> تصدير
                 </a>
             </div>
@@ -33,7 +57,6 @@
                             <th>العمر</th>
                             <th>الصف</th>
                             <th>الفصل الدراسي</th>
-                            <th>السنة الدراسية</th>
                             <th>الحالة</th>
                         </tr>
                     </thead>
@@ -44,8 +67,8 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm me-2">
-                                        <span class="avatar-title bg-primary-light rounded-circle">
-                                            <i class="fas fa-user-graduate text-primary"></i>
+                                        <span class="avatar-title bg-indigo-light rounded-circle">
+                                            <i class="fas fa-user-graduate text-indigo"></i>
                                         </span>
                                     </div>
                                     <div>
@@ -63,7 +86,6 @@
                             <td>{{ \Carbon\Carbon::parse($student->birth_date)->age }} سنة</td>
                             <td>{{ optional($student->class)->name ?? 'غير محدد' }}</td>
                             <td>{{ optional($student->semester)->name ?? 'غير محدد' }}</td>
-                            <td>{{ $student->academic_year }}</td>
                             <td>
                                 <span class="badge {{ $student->status == 'مواطن' ? 'bg-success' : 'bg-warning' }}">
                                     {{ $student->status }}
@@ -83,9 +105,9 @@
             </div>
 
             @if($students->hasPages())
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $students->appends(request()->input())->links() }}
-                </div>
+            <div class="d-flex justify-content-center mt-3">
+                {{ $students->links() }}
+            </div>
             @endif
         </div>
     </div>
@@ -94,6 +116,14 @@
 
 @push('styles')
 <style>
+    .bg-indigo {
+        background-color: #6610f2 !important;
+    }
+
+    .bg-indigo-light {
+        background-color: rgba(102, 16, 242, 0.1);
+    }
+
     .avatar-sm {
         width: 32px;
         height: 32px;
@@ -104,10 +134,6 @@
 
     .avatar-title {
         font-size: 0.875rem;
-    }
-
-    .bg-primary-light {
-        background-color: rgba(13, 110, 253, 0.1);
     }
 
     .bg-pink {
@@ -123,12 +149,12 @@
     }
 
     @media print {
-        .card-header {
-            display: none;
+        .welcome-card, .card-header {
+            display: none !important;
         }
 
         body {
-            background: white;
+            background: white !important;
             font-size: 10pt;
         }
 

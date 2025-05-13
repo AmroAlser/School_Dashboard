@@ -25,6 +25,7 @@ Route::post('admin/login', [AuthController::class, 'login'])->name('admin.login.
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
     Route::resource('/students', StudentController::class);
 
     Route::resource('/subjects', SubjectController::class);
@@ -35,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('/classes', \App\Http\Controllers\SchoolClassController::class);
     Route::resource('/courses', CourseController::class);
     Route::resource('/papers', PaperController::class);
+    Route::get('/papers/{paper}/download', [PaperController::class, 'download'])->name('papers.download');
+    Route::get('/dashboard/refresh-alerts', [DashboardController::class, 'refreshAlerts'])->name('dashboard.refresh.alerts');
+
     Route::get('/reports/students', [ReportController::class, 'studentsReport'])->name('reports.students');
     Route::get('/reports/grades', [ReportController::class, 'gradesReport'])->name('reports.grades');
     Route::get('/reports/semesters', [ReportController::class, 'semestersReport'])->name('reports.semesters');

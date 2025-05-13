@@ -11,9 +11,12 @@ class Teacher extends Model
     protected $fillable = [
         'name',
         'national_id',
+        'job_number',
         'specialization',
         'subject_id',
         'class_id',
+        'tasks',
+        'task_date',
     ];
 
     public function subject()

@@ -12,7 +12,7 @@ class TeacherStudentEvaluationController extends Controller
 {
     public function index()
     {
-        $evaluations = TeacherStudentEvaluation::with(['teacher', 'student', 'class'])->oldest()->get();
+        $evaluations = TeacherStudentEvaluation::with(['teacher', 'student', 'class'])->oldest()->paginate(10); // أو أي رقم تريده
         return view('evaluations.index', compact('evaluations'));
     }
 

@@ -6,16 +6,41 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card shadow-sm">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+    <!-- Welcome Card -->
+    <div class="welcome-card mb-4">
+        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #28a745, #218838);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="text-white mb-3">
+                            <i class="fas fa-clipboard-check me-2"></i> تقرير الدرجات
+                        </h4>
+                        <p class="mb-0 text-white-50">
+                            تقييم أداء الطلاب في المواد الدراسية
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="bg-white bg-opacity-25 p-3 rounded d-inline-block">
+                            <i class="fas fa-award text-white fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0">
-                <i class="fas fa-clipboard-check me-2"></i>تقرير الدرجات
+                <i class="fas fa-clipboard-check me-2"></i> سجل الدرجات
             </h5>
-            <div>
+            <div class="d-flex gap-2">
                 <button class="btn btn-light" onclick="window.print()">
                     <i class="fas fa-print me-1"></i> طباعة
                 </button>
-                <a href="{{ route('export.grades', ['semester_id' => request('semester-filter'), 'subject_id' => request('subject-filter')]) }}" class="btn btn-warning ms-2">
+                <a href="{{ route('export.grades', ['semester_id' => request('semester-filter'), 'subject_id' => request('subject-filter')]) }}"
+                   class="btn btn-light">
                     <i class="fas fa-file-excel me-1"></i> تصدير
                 </a>
             </div>
@@ -23,29 +48,43 @@
 
         <div class="card-body">
             <div class="row mb-4">
-                <div class="col-md-4">
+                <div class="col-md-4 mb-2">
                     <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-filter text-success"></i>
+                        </span>
                         <select class="form-select" id="semester-filter">
                             <option value="">كل الفصول</option>
                             @foreach($semesters as $semester)
-                                <option value="{{ $semester->id }}">{{ $semester->name }}</option>
+                                <option value="{{ $semester->id }}" {{ request('semester-filter') == $semester->id ? 'selected' : '' }}>
+                                    {{ $semester->name }}
+                                </option>
                             @endforeach
                         </select>
-                        <button class="btn btn-outline-success" type="button" id="filter-btn">
-                            <i class="fas fa-filter"></i>
-                        </button>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select class="form-select" id="subject-filter">
-                        <option value="">كل المواد</option>
-                        @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                        @endforeach
-                    </select>
+                <div class="col-md-4 mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-book text-success"></i>
+                        </span>
+                        <select class="form-select" id="subject-filter">
+                            <option value="">كل المواد</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->id }}" {{ request('subject-filter') == $subject->id ? 'selected' : '' }}>
+                                    {{ $subject->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" id="search-input" placeholder="بحث...">
+                <div class="col-md-4 mb-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-search text-success"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" id="search-input" placeholder="بحث...">
+                    </div>
                 </div>
             </div>
 
@@ -58,9 +97,8 @@
                             <th>المادة</th>
                             <th>الصف</th>
                             <th>الفصل</th>
-                            <th>الدرجة</th>
-                            <th>التقييم</th>
-                            <th>التاريخ</th>
+                            <th width="100">الدرجة</th>
+                            <th width="150">التقييم</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,20 +121,22 @@
                             <td>{{ $grade->subject->name }}</td>
                             <td>{{ $grade->class->name }}</td>
                             <td>{{ $grade->semester->name }}</td>
-                            <td>
+                            <td class="text-center">
                                 <span class="badge {{ $grade->score >= 90 ? 'bg-primary' : ($grade->score >= 60 ? 'bg-success' : 'bg-danger') }}">
                                     {{ $grade->score }}
                                 </span>
                             </td>
                             <td>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar {{ $grade->score >= 90 ? 'bg-primary' : ($grade->score >= 60 ? 'bg-success' : 'bg-danger') }}"
-                                         role="progressbar" style="width: {{ $grade->score }}%"
-                                         aria-valuenow="{{ $grade->score }}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                        <div class="progress-bar {{ $grade->score >= 90 ? 'bg-primary' : ($grade->score >= 60 ? 'bg-success' : 'bg-danger') }}"
+                                             role="progressbar" style="width: {{ $grade->score }}%"
+                                             aria-valuenow="{{ $grade->score }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
                                     </div>
+                                    <small class="text-muted">{{ $grade->score }}%</small>
                                 </div>
                             </td>
-                            <td>{{ $grade->created_at->format('Y-m-d') }}</td>
                         </tr>
                         @empty
                         <tr>
@@ -111,9 +151,9 @@
             </div>
 
             @if($grades->hasPages())
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $grades->appends(request()->input())->links() }}
-                </div>
+            <div class="d-flex justify-content-center mt-3">
+                {{ $grades->appends(request()->input())->links() }}
+            </div>
             @endif
         </div>
     </div>
@@ -124,13 +164,13 @@
 <script>
     $(document).ready(function() {
         // فلترة الجدول
-        $('#filter-btn').click(function() {
+        function filterGrades() {
             const semester = $('#semester-filter').val();
             const subject = $('#subject-filter').val();
             const search = $('#search-input').val().toLowerCase();
 
             $('#grades-table tbody tr').each(function() {
-                const rowSemester = $(this).find('td:eq(3)').text();
+                const rowSemester = $(this).find('td:eq(4)').text();
                 const rowSubject = $(this).find('td:eq(2)').text();
                 const rowText = $(this).text().toLowerCase();
 
@@ -140,7 +180,10 @@
 
                 $(this).toggle(semesterMatch && subjectMatch && searchMatch);
             });
-        });
+        }
+
+        $('#semester-filter, #subject-filter').change(filterGrades);
+        $('#search-input').keyup(filterGrades);
     });
 </script>
 @endpush
@@ -148,7 +191,7 @@
 @push('styles')
 <style>
     .bg-success-light {
-        background-color: rgba(25, 135, 84, 0.1);
+        background-color: rgba(40, 167, 69, 0.1);
     }
 
     .progress {
@@ -158,6 +201,21 @@
 
     .progress-bar {
         border-radius: 3px;
+    }
+
+    @media print {
+        .welcome-card, .card-header, .input-group {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+            font-size: 10pt;
+        }
+
+        .table {
+            font-size: 10pt;
+        }
     }
 </style>
 @endpush

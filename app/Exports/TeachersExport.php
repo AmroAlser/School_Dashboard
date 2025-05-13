@@ -11,12 +11,14 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithProperties;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-
-class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths, WithProperties, ShouldAutoSize
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Carbon\Carbon;
+class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths, WithProperties, ShouldAutoSize, WithColumnFormatting
 {
     public function collection()
     {
-        return Teacher::with('subject')->get();
+        return Teacher::with(['subject'])->get();
     }
 
     public function map($teacher): array
@@ -24,18 +26,28 @@ class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithS
         return [
             $teacher->name,
             $teacher->national_id,
+            $teacher->job_number ?? '—',
             $teacher->specialization,
             $teacher->subject ? $teacher->subject->name : '—',
+            $teacher->tasks ?? '—',
+            $teacher->task_date ? \Carbon\Carbon::parse($teacher->task_date)->format('Y-m-d') : '—',
+            $teacher->created_at->format('Y-m-d H:i'),
+            $teacher->updated_at->format('Y-m-d H:i'),
         ];
     }
 
     public function headings(): array
     {
         return [
-            'الاسم',
+            'الاسم الكامل',
             'رقم الهوية',
+            'الرقم الوظيفي',
             'التخصص',
-            'المادة',
+            'المادة الدراسية',
+            'المهام المكلف بها',
+            'تاريخ المهمة',
+            'تاريخ التسجيل',
+            'تاريخ آخر تحديث',
         ];
     }
 
@@ -43,25 +55,32 @@ class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithS
     {
         $sheet->setRightToLeft(true);
 
-        $lastRow = Teacher::count() + 1; // عدد الصفوف (بما فيهم عنوان الجدول)
+        $lastRow = Teacher::count() + 1;
 
         return [
-            1 => [ // Style for header row
+            1 => [
                 'font' => [
                     'bold' => true,
-                    'size' => 14,
+                    'size' => 12,
                     'color' => ['rgb' => 'FFFFFF'],
                 ],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '198754'], // لون رأس الجدول
+                    'startColor' => ['rgb' => '198754'],
                 ],
                 'alignment' => [
                     'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                     'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'wrapText' => true,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['rgb' => 'FFFFFF'],
+                    ],
                 ],
             ],
-            'A2:D' . $lastRow => [ // Style for all data cells
+            'A2:I' . $lastRow => [
                 'alignment' => [
                     'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
                     'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
@@ -69,8 +88,18 @@ class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithS
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        'color' => ['rgb' => '000000'],
+                        'color' => ['rgb' => 'DDDDDD'],
                     ],
+                ],
+            ],
+            'B2:B' . $lastRow => [
+                'numberFormat' => [
+                    'formatCode' => NumberFormat::FORMAT_TEXT,
+                ],
+            ],
+            'C2:C' . $lastRow => [
+                'numberFormat' => [
+                    'formatCode' => NumberFormat::FORMAT_TEXT,
                 ],
             ],
         ];
@@ -79,22 +108,36 @@ class TeachersExport implements FromCollection, WithHeadings, WithMapping, WithS
     public function columnWidths(): array
     {
         return [
-            'A' => 30, // Name
-            'B' => 20, // National ID
-            'C' => 25, // Specialization
-            'D' => 20, // Subject
+            'A' => 25, // الاسم الكامل
+            'B' => 15, // رقم الهوية
+            'C' => 15, // الرقم الوظيفي
+            'D' => 20, // التخصص
+            'E' => 20, // المادة الدراسية
+            'F' => 30, // المهام المكلف بها
+            'G' => 15, // تاريخ المهمة
+            'H' => 18, // تاريخ التسجيل
+            'I' => 18, // تاريخ آخر تحديث
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'B' => NumberFormat::FORMAT_TEXT,
+            'C' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
     public function properties(): array
     {
         return [
-            'creator' => 'School Management System',
-            'title' => 'قائمة المعلمين',
-            'description' => 'قائمة المعلمين المسجلين في النظام',
-            'subject' => 'Teachers Information',
-            'keywords' => 'teachers, school, education',
-            'category' => 'School Reports',
+            'creator' => 'نظام إدارة المدرسة',
+            'title' => 'تصدير بيانات المعلمين',
+            'description' => 'بيانات كاملة لجميع المعلمين المسجلين في النظام',
+            'subject' => 'بيانات المعلمين',
+            'keywords' => 'معلمين, مدرسة, تعليم',
+            'category' => 'التقارير المدرسية',
+            'company' => 'المدرسة الهلال الخاصة',
         ];
     }
 }

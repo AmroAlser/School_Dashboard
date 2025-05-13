@@ -60,7 +60,7 @@
                                 <div class="form-floating">
                                     <input type="date" class="form-control @error('start_date') is-invalid @enderror"
                                            id="start_date" name="start_date"
-                                           value="{{ old('start_date', $course->start_date->format('Y-m-d')) }}" required>
+                                           value="{{ old('start_date', $course->start_date) }}" required>
                                     <label for="start_date">تاريخ البدء</label>
                                     @error('start_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -71,7 +71,7 @@
                                 <div class="form-floating">
                                     <input type="date" class="form-control @error('end_date') is-invalid @enderror"
                                            id="end_date" name="end_date"
-                                           value="{{ old('end_date', $course->end_date->format('Y-m-d')) }}" required>
+                                           value="{{ old('end_date', $course->end_date) }}" required>
                                     <label for="end_date">تاريخ الانتهاء</label>
                                     @error('end_date')
                                         <div class="invalid-feedback">{{ $message }}</div>

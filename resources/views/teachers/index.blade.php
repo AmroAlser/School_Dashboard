@@ -65,9 +65,12 @@
                         <tr class="text-center">
                             <th width="40px" class="bg-light">#</th>
                             <th>الاسم</th>
+                            <th>الرقم الوظيفي</th>
                             <th>رقم الهوية</th>
                             <th>التخصص</th>
                             <th>المادة</th>
+                            <th>المهام</th>
+                            <th>تاريخ المهمة</th>
                             <th width="150px">الإجراءات</th>
                         </tr>
                     </thead>
@@ -85,6 +88,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td dir="ltr" class="text-center">{{ $teacher->job_number ?? '—' }}</td>
                                 <td dir="ltr" class="text-center">{{ $teacher->national_id }}</td>
                                 <td>{{ $teacher->specialization }}</td>
                                 <td class="text-center">
@@ -94,6 +98,9 @@
                                         <span class="text-muted">—</span>
                                     @endif
                                 </td>
+                                <td dir="ltr" class="text-center">{{ $teacher->tasks ?? '—' }}</td>
+                                <td dir="ltr" class="text-center">{{$teacher->task_date ? $teacher->task_date : '—'  }}</td>
+
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <!-- زر عرض التفاصيل -->
@@ -130,7 +137,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center text-muted">
                                         <i class="fas fa-user-slash fa-3x mb-3 text-secondary"></i>
                                         <h5>لا يوجد معلمون مسجلون</h5>

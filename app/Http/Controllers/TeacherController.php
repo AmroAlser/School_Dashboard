@@ -40,9 +40,12 @@ class TeacherController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'national_id' => 'required|unique:teachers',
+            'national_id' => 'required|unique:teachers,national_id',
+            'job_number' => 'nullable|unique:teachers,job_number',
             'specialization' => 'required',
             'subject_id' => 'required|exists:subjects,id',
+            'tasks' => 'nullable|string',
+            'task_date' => 'nullable|date',
         ]);
 
         Teacher::create($request->all());
@@ -65,9 +68,13 @@ class TeacherController extends Controller
         $request->validate([
             'name' => 'required',
             'national_id' => 'required|unique:teachers,national_id,' . $teacher->id,
+            'job_number' => 'nullable|unique:teachers,job_number,' . $teacher->id,
             'specialization' => 'required',
             'subject_id' => 'required|exists:subjects,id',
+            'tasks' => 'nullable|string',
+            'task_date' => 'nullable|date',
         ]);
+
 
         $teacher->update($request->all());
 

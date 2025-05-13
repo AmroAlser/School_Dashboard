@@ -9,9 +9,12 @@
     <div class="card shadow-lg border-0">
         <!-- Card Header -->
         <div class="card-header bg-primary text-white d-flex flex-column flex-md-row justify-content-between align-items-center py-3">
-            <h5 class="mb-0">
-                <i class="fas fa-users me-2"></i> سجل الطلاب
-            </h5>
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i> سجل الطلاب
+                    <span class="badge bg-white text-primary ms-2">{{ $students->total() }} طالب</span>
+                </h5>
+            </div>
             <div class="d-flex gap-2 mt-2 mt-md-0">
                 <a href="{{ route('students.create') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-plus me-1"></i> تسجيل طالب جديد
@@ -19,6 +22,9 @@
                 <a href="{{route('reports.allstudents')}}" class="btn btn-success btn-sm">
                     <i class="fas fa-file-excel me-1"></i> تصدير البيانات
                 </a>
+                {{-- <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="fas fa-file-import me-1"></i> استيراد
+                </button> --}}
             </div>
         </div>
 
@@ -48,7 +54,7 @@
                                 <i class="fas fa-search text-muted"></i>
                             </span>
                             <input type="text" id="searchInput" class="form-control border-start-0"
-                                   placeholder="ابحث بالاسم أو الرقم...">
+                                   placeholder="ابحث بالاسم أو الرقم أو الهاتف...">
                         </div>
                     </div>
 
@@ -81,14 +87,14 @@
                         </select>
                     </div>
 
-                    <!-- Gender Filter -->
-                    <div class="col-md-2">
-                        <select id="genderFilter" class="form-select form-select-sm">
-                            <option value="">كل الجنسين</option>
-                            <option value="ذكر">ذكر</option>
-                            <option value="أنثى">أنثى</option>
+                    <!-- Disability Filter -->
+                    {{-- <div class="col-md-2">
+                        <select id="disabilityFilter" class="form-select form-select-sm">
+                            <option value="">جميع الطلاب</option>
+                            <option value="1">ذوي احتياجات</option>
+                            <option value="0">لا يوجد إعاقة</option>
                         </select>
-                    </div>
+                    </div> --}}
 
                     <!-- Reset Button -->
                     <div class="col-md-1">
@@ -109,10 +115,11 @@
                             <th width="120">رقم الهوية</th>
                             <th width="100">الصف</th>
                             <th width="100">الفصل</th>
-                            <th width="80">الجنس</th>
                             <th width="80">العمر</th>
+                            <th width="120">العنوان</th>
+                            <th width="100">الإعاقة</th>
                             <th width="120">الحالة</th>
-                            <th width="120">الإجراءات</th>
+                            <th width="150">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="studentsTable">
@@ -122,20 +129,30 @@
                             data-id="{{ $student->national_id }}"
                             data-class="{{ $student->class->name ?? '' }}"
                             data-semester="{{ $student->semester->name ?? '' }}"
-                            data-gender="{{ $student->gender }}"
-                            data-status="{{ $student->status }}">
-                            <td class="text-center">{{ $loop->iteration }}</td>
+                            data-status="{{ $student->status }}"
+                            data-disability="{{ $student->disability ? 1 : 0 }}"
+                            data-phone="{{ $student->phone ?? '' }}"
+                            data-address="{{ $student->address ?? '' }}">
+                            <td class="text-center">{{ $loop->iteration + ($students->currentPage() - 1) * $students->perPage() }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
+                                    {{-- @if($student->report_image)
+                                    <img src="{{ asset($student->report_image) }}" width="40" height="40" class="rounded-circle me-2" alt="صورة الطالب">
+                                    @else --}}
                                     <div class="avatar-sm me-2">
                                         <span class="avatar-title bg-primary-light rounded-circle">
                                             <i class="fas fa-user-graduate text-primary"></i>
                                         </span>
                                     </div>
+                                    {{-- @endif --}}
                                     <div>
                                         <h6 class="mb-0">{{ $student->name }}</h6>
-                                        <small class="text-muted d-block">{{ $student->entry_date }}</small>
-                                        <small class="text-muted">{{ $student->phone ?? 'لا يوجد' }}</small>
+                                        <small class="text-muted d-block">{{ \Carbon\Carbon::parse($student->entry_date)->format('Y-m-d') }}</small>
+                                        @if($student->phone)
+                                        <small class="text-muted">
+                                            <i class="fas fa-phone me-1"></i> {{ $student->phone }}
+                                        </small>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -151,14 +168,27 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span class="badge {{ $student->gender == 'ذكر' ? 'bg-info' : 'bg-pink' }}">
-                                    {{ $student->gender }}
-                                </span>
-                            </td>
-                            <td class="text-center">
                                 <span class="badge bg-light text-dark">
                                     {{ \Carbon\Carbon::parse($student->birth_date)->age }} سنة
                                 </span>
+                            </td>
+                            <td>
+                                @if($student->address)
+                                <span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{ $student->address }}">
+                                    {{ $student->address }}
+                                </span>
+                                @else
+                                <span class="text-muted">غير محدد</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($student->disability)
+                                <span class="badge bg-danger">
+                                  {{ $student->disability }}
+                                </span>
+                                @else
+                                <span class="badge bg-success">لا يوجد</span>
+                                @endif
                             </td>
                             <td class="text-center">
                                 <span class="badge {{ $student->status == 'مواطن' ? 'bg-success' : 'bg-warning' }}">
@@ -177,7 +207,7 @@
 
                                     <!-- Edit Button -->
                                     <a href="{{ route('students.edit', $student->id) }}"
-                                        class="btn btn-action btn-view rounded-3"
+                                        class="btn btn-action btn-edit rounded-3"
                                        data-bs-toggle="tooltip"
                                        title="تعديل الطالب">
                                         <i class="fas fa-pen"></i>
@@ -188,7 +218,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                               class="btn btn-action btn-view rounded-3"
+                                               class="btn btn-action btn-delete rounded-3"
                                                 data-bs-toggle="tooltip"
                                                 title="حذف الطالب"
                                                 onclick="return confirm('هل أنت متأكد من حذف الطالب {{ $student->name }}؟')">
@@ -200,10 +230,15 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center py-4 text-muted">
-                                <i class="fas fa-user-slash fa-3x mb-3 opacity-50"></i>
-                                <h5 class="mb-1">لا يوجد طلاب مسجلين</h5>
-                                <p class="mb-0">يمكنك إضافة طلاب جدد باستخدام زر "تسجيل طالب جديد"</p>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-graduate fa-4x text-muted mb-3"></i>
+                                    <h4 class="mb-2">لا يوجد طلاب مسجلين</h4>
+                                    <p class="text-muted mb-4">يمكنك البدء بإضافة طلاب جدد باستخدام زر "تسجيل طالب جديد"</p>
+                                    <a href="{{ route('students.create') }}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i> إضافة طالب جديد
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         @endforelse
@@ -217,6 +252,43 @@
                     {{ $students->appends(request()->input())->links() }}
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-import me-2"></i> استيراد طلاب من ملف Excel
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">اختر ملف Excel</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx, .xls" required>
+                        <div class="form-text">يجب أن يكون الملف بصيغة .xlsx أو .xls</div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        يرجى التأكد من تنسيق الملف حسب النموذج المطلوب
+                        <a href="{{ asset('templates/students_import_template.xlsx') }}" class="d-block mt-2">
+                            <i class="fas fa-download me-1"></i> تحميل نموذج استيراد
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i> استيراد
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -234,23 +306,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusValue = $('#statusFilter').val();
         const classValue = $('#classFilter').val();
         const semesterValue = $('#semesterFilter').val();
-        const genderValue = $('#genderFilter').val();
+        const disabilityValue = $('#disabilityFilter').val();
 
         $('.student-row').each(function() {
             const name = $(this).data('name').toLowerCase();
             const id = $(this).data('id').toString();
+            const phone = $(this).data('phone').toString();
             const studentClass = $(this).data('class');
             const semester = $(this).data('semester');
-            const gender = $(this).data('gender');
             const status = $(this).data('status');
+            const disability = $(this).data('disability').toString();
+            const address = $(this).data('address').toLowerCase();
 
-            const matchesSearch = name.includes(searchValue) || id.includes(searchValue);
+            const matchesSearch = name.includes(searchValue) ||
+                                id.includes(searchValue) ||
+                                phone.includes(searchValue) ||
+                                address.includes(searchValue);
             const matchesStatus = statusValue === '' || status === statusValue;
             const matchesClass = classValue === '' || studentClass === classValue;
             const matchesSemester = semesterValue === '' || semester === semesterValue;
-            const matchesGender = genderValue === '' || gender === genderValue;
+            const matchesDisability = disabilityValue === '' || disability === disabilityValue;
 
-            if (matchesSearch && matchesStatus && matchesClass && matchesSemester && matchesGender) {
+            if (matchesSearch && matchesStatus && matchesClass && matchesSemester && matchesDisability) {
                 $(this).show();
             } else {
                 $(this).hide();
@@ -259,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Event listeners for filters
-    $('#searchInput, #statusFilter, #classFilter, #semesterFilter, #genderFilter').on('input change', filterStudents);
+    $('#searchInput, #statusFilter, #classFilter, #semesterFilter, #disabilityFilter').on('input change', filterStudents);
 
     // Reset filters
     $('#resetFilters').click(function() {
@@ -267,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#statusFilter').val('');
         $('#classFilter').val('');
         $('#semesterFilter').val('');
-        $('#genderFilter').val('');
+        $('#disabilityFilter').val('');
         filterStudents();
     });
 });
@@ -324,6 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     .table-hover tbody tr:hover {
         background-color: rgba(0, 0, 0, 0.02);
+        transform: translateX(3px);
+        transition: all 0.3s ease;
     }
 
     .form-select-sm, .input-group-sm {
@@ -335,34 +414,50 @@ document.addEventListener('DOMContentLoaded', function () {
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    .btn-outline-primary {
-        color: #0d6efd;
-        border-color: #0d6efd;
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: all 0.2s;
     }
 
-    .btn-outline-primary:hover {
+    .btn-view {
+        color: #0d6efd;
+        border: 1px solid #0d6efd;
+    }
+
+    .btn-view:hover {
         background-color: #0d6efd;
         color: white;
     }
 
-    .btn-outline-warning {
+    .btn-edit {
         color: #ffc107;
-        border-color: #ffc107;
+        border: 1px solid #ffc107;
     }
 
-    .btn-outline-warning:hover {
+    .btn-edit:hover {
         background-color: #ffc107;
         color: #212529;
     }
 
-    .btn-outline-danger {
+    .btn-delete {
         color: #dc3545;
-        border-color: #dc3545;
+        border: 1px solid #dc3545;
     }
 
-    .btn-outline-danger:hover {
+    .btn-delete:hover {
         background-color: #dc3545;
         color: white;
+    }
+
+    .empty-state {
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
     }
 
     @media (max-width: 768px) {
@@ -385,6 +480,25 @@ document.addEventListener('DOMContentLoaded', function () {
             width: 100%;
             justify-content: flex-end;
         }
+    }
+
+    /* Custom scrollbar for table */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 </style>
 @endpush

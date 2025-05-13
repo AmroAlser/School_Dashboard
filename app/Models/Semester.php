@@ -66,7 +66,17 @@ class Semester extends Model
         $today = Carbon::now();
         return $today->betweenIncluded($this->start_date, $this->end_date); // سيتم تحويلهما تلقائيًا إلى Carbon
     }
+    public function daysLeft()
+{
+    $today = Carbon::today();
+    $endDate = Carbon::parse($this->end_date);
 
+    if ($today->gt($endDate)) {
+        return 0;
+    }
+
+    return $today->diffInDays($endDate);
+}
     public function progress()
     {
         $startDate = $this->start_date; // سيتم تحويلها تلقائيًا إلى Carbon
@@ -90,4 +100,17 @@ class Semester extends Model
 
         return round(($elapsedDays / $totalDays) * 100);
     }
+    public function status()
+{
+    $today = Carbon::now();
+
+    if ($today < $this->start_date) {
+        return 'upcoming'; // لم يبدأ بعد
+    } elseif ($today > $this->end_date) {
+        return 'completed'; // انتهى
+    } else {
+        return 'active'; // جاري
+    }
+}
+
 }

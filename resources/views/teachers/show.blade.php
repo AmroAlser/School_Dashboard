@@ -26,6 +26,10 @@
                                 <span class="detail-value">{{ $teacher->national_id }}</span>
                             </div>
                             <div class="detail-item">
+                                <span class="detail-label">رقم الوظيفي:</span>
+                                <span class="detail-value">{{ $teacher->job_number }}</span>
+                            </div>
+                            <div class="detail-item">
                                 <span class="detail-label">التخصص:</span>
                                 <span class="detail-value">{{ $teacher->specialization }}</span>
                             </div>
@@ -40,6 +44,14 @@
                             <i class="fas fa-book"></i> المعلومات الأكاديمية
                         </div>
                         <div class="detail-body">
+                            <div class="detail-item">
+                                <span class="detail-label">المهام:</span>
+                                <span class="detail-value">{{ $teacher->tasks }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">تاريخ المهام:</span>
+                                <span class="detail-value">{{ $teacher->task_date }}</span>
+                            </div>
                             <div class="detail-item">
                                 <span class="detail-label">المادة الدراسية:</span>
                                 <span class="detail-value">
